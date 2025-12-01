@@ -1,0 +1,435 @@
+@import url(http://fonts.googleapis.com/css?family=Lato:300,400,700,800);
+
+@font-face {
+	font-family: 'codropsicons';
+	src:url('../fonts/codropsicons/codropsicons.eot');
+	src:url('../fonts/codropsicons/codropsicons.eot?#iefix') format('embedded-opentype'),
+		url('../fonts/codropsicons/codropsicons.woff') format('woff'),
+		url('../fonts/codropsicons/codropsicons.ttf') format('truetype'),
+		url('../fonts/codropsicons/codropsicons.svg#codropsicons') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+
+body, html { font-size: 100%; padding: 0; margin: 0;}
+
+body {
+	font-family: 'Lato', Calibri, Arial, sans-serif;
+	font-weight: 400;
+	font-size: 15px;
+	color: #3D4771;
+	overflow: scroll;
+	overflow-x: hidden;
+	background-color: #8997B0;
+
+}
+	
+.logogross {
+	position: relative;
+	left: 50%;
+	Top: 180px;
+	margin-left: -100px;
+}
+.logoklein {
+	width: 60px;
+	height: 60px;
+	padding: 0 0 0 0px;
+	z-index: 1000;
+	vertical-align: middle;
+	display: block;
+}	
+.menutext {
+	float: left;
+	font-family: 'Lato', Arial, sans-serif;
+	text-transform: uppercase;
+	letter-spacing: 1.2px;
+	text-align: left;
+	vertical-align: middle;
+	font-size: 1em;
+	font-weight: 800;
+	color: #fc756f;
+	height: 60px;
+	width: auto;
+	padding-right: ;
+	margin-left: 20px;
+	
+}	
+
+.akimtext a {
+	float: right;
+	font-family: 'Lato', Arial, sans-serif;
+	text-transform: none;
+	letter-spacing: 1.1px;
+	text-align: right;
+	vertical-align: middle;
+	font-size: 1.7em;
+	font-weight: 800;
+	color: #566473;
+	height: 60px;
+	width: auto;
+	border-right-width: 20px;
+	border-right-style: solid;
+	border-right-color: #FFFFFF;
+}
+	
+.akimtext a:hover {
+	border-right-color: #5f6f81;
+}
+
+.akimtext2 {
+	display: none;
+	float: right;
+	font-family: 'Lato', Arial, sans-serif;
+	text-transform: none;
+	letter-spacing: 1.1px;
+	text-align: right;
+	vertical-align: middle;
+	font-size: 1em;
+	font-weight: 800;
+	color: #566473;
+	height: 40px;
+	width: auto;
+
+}
+#intro {
+	font-size: 2em;
+	line-height: 1.8em;
+	font-weight: 400;
+	color: #fff;
+	top: 210px;
+	position: relative;
+	text-align: center;
+	text-decoration: none;
+}	
+.intro a {
+	color: #566473;
+	text-decoration: none;
+
+	}
+.intro a:hover,
+.intro a:active {
+	color: #fff;
+	font-weight: 400;
+	text-decoration: none;
+}	
+
+/* Bildmarging - alle Seiten */
+.img-werte {
+	float: left;
+	max-width: 100%;
+	height: auto;
+	margin: 10px 35px 20px 1px;
+	box-shadow: 7px 7px 10px -5px rgba(51,51,51,1);
+}
+
+/* Entwicklungn */
+.img-umfeld {
+	float: ;
+	max-width: 100%;
+	height: auto;
+	margin: 25px 35px 5px 1px;
+	box-shadow: 7px 7px 10px -5px rgba(51,51,51,1);
+}	
+/* Produkte */
+.img-umfeld2 {
+	float: ;
+	height: auto;
+	margin: 0 25px 10px 1px;
+	box-shadow: 7px 7px 10px -5px rgba(51,51,51,1);
+}
+
+container img
+/* div.bl-panel-items > div > div img */{
+	float: ;
+	margin: 0 35px 15px 1px;
+	max-width: 100%;
+	height: auto;
+}
+
+.map{
+	box-shadow: 9px 9px 10px -5px rgba(51,51,51,1);
+	position: relative;
+	height: auto;
+	max-width: 100%;
+	top: 5px;
+	margin: 5px 15px 5px 1px;
+
+}
+.container,
+.codrops-top {
+	color: #566473;
+	font-family: 'Lato', Arial, sans-serif;
+}	
+.container {
+	padding-top: 0;
+	padding-right: 60px;
+	padding-bottom: 0;
+	padding-left: 60px;	
+}	
+	
+/* Ueberschrift 1 color: #566473; */
+.container h1 {
+	font-size: 1,8em;
+	line-height: 1.4em;
+	letter-spacing: 1.2px;
+	margin-bottom: .2em;
+	font-weight: 600;
+	color: #fff;
+	padding: 90px 60px 0 0;
+
+}	
+.container h2 {
+	font-size: 1.2em;
+	line-height: 1.4em;
+	letter-spacing: 1.2px;
+	margin: 0;
+	font-weight: 600;
+	color: #fff;
+	padding: 0em 0 0.5em 0;
+}	
+.container h3 {
+	font-size: 1.5em;
+	line-height: 1.4em;
+	font-weight: 600;
+	padding: 0;
+	text-transform: ;
+	color: #fff;
+	margin-top: 5px;
+	}	
+
+
+/* Abschnitte */
+.container p {
+	margin: 0 auto;
+	font-size: 1.2em;
+	line-height: 1.4em;
+	letter-spacing: 1.2px;
+	color: #414D5C;
+	padding: 0 0 0.8em 0.1em;
+}
+	
+.container a {
+	color: #566473;
+	text-decoration: none;
+	font-weight: 400;
+	
+}
+.container a:hover,
+.container a:active {
+	color: #fff;
+
+/* Listen */
+}
+.listen {
+	color:#414D5C
+}	
+	
+.listen > ul li {
+	text-decoration: none;
+	list-style-type: none;
+	font-size: 1.2em;
+	font-weight: 300;
+	line-height: 1em;
+	letter-spacing: 1.2px;
+	margin: 0.5em 0 0 0;
+	display: block;
+	padding-left: ;
+	text-indent: ;
+
+}
+.listen-inline {
+	text-decoration: none;
+	list-style-type: none;
+}	
+	
+.listen-inline > ul li {
+	font-size: 1.2em;
+	font-weight: 300;
+	line-height: 
+	4em;
+	letter-spacing: 1.2px;
+	margin: 0.5em 0 0 0;
+	display: block;
+	list-style-position: ;
+}
+	
+.entwicklungen {
+	text-decoration: none;
+	font-size: 1.2em;
+	font-weight: 300;
+	line-height: 1.4em;
+	letter-spacing: 1.2px;
+}
+	
+.entwicklungen > ul {
+
+}	
+.entwicklungen > ul li {
+	text-decoration: none;
+	list-style-type: none;
+	font-size: 1.2em;
+	font-weight: 300;
+	line-height: 1.4em;
+	letter-spacing: 1.2px;
+	margin: 0 0 0.5em 0;
+}
+.sub-ul {
+	padding-left: ;
+	text-indent: ;	
+}
+
+/* logo Listen */
+
+.logolisten {
+	text-decoration: none;
+	list-style-type: none;
+}	
+	
+.logolisten > ul {
+	text-decoration: none;
+	list-style-type: none;
+	display: block;
+	color: #708196;
+	margin-left: -40px;	
+	
+}
+.logolisten > ul li {
+	text-decoration: none;
+	list-style-type: none;
+	float: left;
+	margin-right: 20px;
+	margin-bottom: 20px;
+	background-color: rgba(255,255,255,1);
+	vertical-align: middle;
+	padding: 10px;
+	box-shadow: 7px 7px 10px -5px rgba(51,51,51,1);
+
+}
+
+.fleft { 
+	float: left;
+	margin-top: 0px;
+	height: 60px;
+	width: 250px;
+	
+}
+/* Tablets */
+@media screen and (max-width: 1025px) {
+	
+	.fleft {
+	width: 100%;
+	float: ;
+	text-align: left;
+}
+.menutext {
+	width: 230px;
+}	
+.akimtext a {
+	font-size: 1.2em;
+	font-weight: 800;
+	height: 60px;
+	width: auto;
+}	
+
+/* Mobiles quer */
+@media screen and (max-width: 740px) {
+
+
+.logogross {
+	Top: 120px;
+}	
+#intro {
+	font-size: 1.4em;
+	line-height: 1.6em;
+	top: 150px;
+}	
+.container {
+	padding: 0 30px 0 30px;
+	font-size: 90%;	
+}
+.container h1 {
+	margin-bottom: .2em;
+	padding: 70px 50px 0 0;
+}
+.container h2 {
+	padding: 0.5em 0 0.5em 0;
+}
+.menutext {
+	width: 210px;
+	padding-left: 10px;
+}		
+.akimtext a {
+	display: none;
+}
+.akimtext2 {
+	display: block;
+	font-weight: 800;
+	}
+.akimtext2 a {
+	font-size: .9em;
+	height: 40px;
+	letter-spacing: 1px;
+	border-right-width: 15px;
+	border-right-style: solid;
+	border-right-color: #FFFFFF;
+}
+.akimtext2 a:hover {
+	border-right-color: #5f6f81;	
+}	
+.logo-gross {
+	position: relative;
+	left: 200px;
+	Top: 120px;	
+}
+container img {
+	margin: 8px 30px 12px 1px;
+	max-width: 100%;
+}	
+/* Bildmarging alle */
+.img-werte {
+	max-width: 100%;
+	height: auto;
+	margin: 10px 35px 15px 1px;
+}	
+.entwicklungen {
+	text-decoration: none;
+	list-style-type: none;
+	width: 100%;
+}
+/* Entwicklungn */
+.img-umfeld {
+	max-width: 100%;
+	height: auto;
+	margin: 25px 30px 5px 1px;
+}	
+.listen > ul li {
+	padding-left: -18px;
+	text-indent: -18px;
+}	
+	
+.logolisten > ul {
+	margin-left: -40px;	
+}
+.logolisten > ul li {
+	margin-right: 15px;
+	margin-bottom: 15px;
+	padding: 10px;
+}
+.fleft { 
+	height: 40px;
+	width: 100%;
+	float: ;
+	text-align: left;
+}		
+
+@media screen and (max-width: 400px) { 	
+		
+.logogross {
+	Top: 60px;
+}	
+#intro {
+	font-size: 1.4em;
+	line-height: 1.6em;
+	top: 80px;
+
+}	

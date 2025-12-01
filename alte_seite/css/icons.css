@@ -1,0 +1,26 @@
+@font-face {
+	font-family: 'icomoon';
+	src:url('../fonts/icomon/icomoon.eot');
+	src:url('../fonts/icomon/icomoon.eot?#iefix') format('embedded-opentype'),
+url('../fonts/icomon/icomoon.svg#icomoon') format('svg'),
+url('../fonts/icomon/icomoon.woff') format('woff'),
+url('../fonts/icomon/icomoon.ttf') format('truetype');
+	font-weight: normal;
+	font-style: normal;
+}
+
+.cd-dropdown span[class^="icon-"]:before, 
+.cd-dropdown span[class*=" icon-"]:before {
+	font-family: 'icomoon';
+	font-style: normal;
+	speak: none;
+	font-weight: normal;
+	position: absolute;
+	font-size: 400px;
+	line-height: 40px;
+	width: 50px;
+	top: 50%;
+	left: 15px;
+	margin-top: -20px;
+	text-align: center;
+}

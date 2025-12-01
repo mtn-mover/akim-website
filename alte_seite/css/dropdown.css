@@ -1,0 +1,213 @@
+@import url('components.css');
+@import url('../SD-AKIM/css/icons.css');
+
+
+/* Select fallback 
+.cd-select {
+	border: 10px solid #ddd;
+}
+.cd-dropdown,
+.cd-select {
+	position: relative;
+	width: ;
+	margin: 0 0 0 0;
+	display: block;
+	styling 
+	*/
+	
+/* Oberes sichtbares Element*/ 
+.cd-select {
+	top: 0px;
+}
+.cd-dropdown{
+	position: relative;
+	top: 0px;
+	height: 60px;
+	width: 250px;	
+	font-family: 'Lato', Arial, sans-serif;
+	text-transform: uppercase;
+	font-size: 13px;
+	letter-spacing: 1.2px;
+	text-align: left;
+	font-weight: 700;
+	color: #5f6f81;
+}
+
+/* Texte Sichtbares 1. Element */
+.cd-dropdown > span {
+	width: 100%;
+	height: 60px;
+	line-height: 60px;
+	color: #fc756f;
+	font-weight: 700;
+	font-size: 14px;
+	letter-spacing: 1.2px;
+	background: #fff;
+	display: block;
+	padding: 0px 20px 0 20px;
+	position: relative;
+	cursor: pointer;
+}
+/* Pfeil Teil */
+.cd-dropdown > span:after {
+	content: '\25BC';
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	width: 50px;
+	text-align: center;
+	font-size: 13px;
+	letter-spacing: 1.2px;
+	padding: 0px;
+}
+/* Austausch Themen - Fallblock*/
+.cd-dropdown ul {
+	position: absolute;
+	top: 0px;
+	width: 250px;
+	list-style-type: none;
+	font-size: 13px;
+	letter-spacing: 1.2px;
+	margin: 0;
+	padding: 0;
+	display: block;
+	border-bottom: 1px solid #c6d0da;
+	
+}
+.cd-dropdown ul li {
+	position: absolute;
+	width: 250px;
+	height: 60px;
+	display: block;
+}
+/* Texte Fallblock */
+.cd-dropdown ul li span {
+	width: 100%;
+	background: #fff;
+	height: 60px;
+	line-height: 60px;
+	font-size: 13px;
+	letter-spacing: 1.2px;
+	padding: 0 0 0 20px;
+	display: block;
+	color: #5f6f81;
+	cursor: pointer;
+	font-weight: 700;
+}
+.cd-dropdown span:hover,
+.cd-active.cd-dropdown ul li span:hover {
+	background: #fc756f;
+	color: #fff;
+}
+.cd-active.cd-dropdown {
+	color: #fc756f;
+	background: #fff;
+}
+.cd-dropdown.cd-active > span:after {
+	content: '\25B2';
+}	
+.cd-dropdown > span span[class^="icon-"],
+.cd-dropdown > span span[class*=" icon-"]{
+	padding: 0 0 0 20px;
+}
+/* Functions */
+.cd-dropdown > span,
+.cd-dropdown ul li span {
+	-webkit-backface-visibility: hidden;
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.cd-active.cd-dropdown ul li span {
+	-webkit-transition: all 0.2s linear 0s;
+	-moz-transition: all 0.2s linear 0s;
+	-ms-transition: all 0.2s linear 0s;
+	-o-transition: all 0.2s linear 0s;
+	transition: all 0.2s linear 0s;
+}
+
+@media screen and (max-width: 740px) {
+		
+.cd-dropdown,
+.cd-dropdown > span:after {
+	font-size: 12px;
+}	
+.cd-dropdown{
+	height: 40px;
+	width: 220px;
+}
+/* Texte sichtbares 1. Element*/ 
+.cd-dropdown > span {
+	height: 40px;
+	line-height: 40px;
+	font-size: 12px;
+	padding: 0px 10px 0 10px;
+}
+/* Pfeil Teil */
+.cd-dropdown > span:after {
+	width: 30px;	
+}
+.cd-dropdown ul {
+	position: absolute;
+	top: 0px;
+	width: 220px;
+}
+.cd-dropdown ul li {
+	position: absolute;
+	width: 220px;
+	height: 40px;
+}
+/* 1. Austausch Thema */
+.cd-dropdown ul li span {
+	height: 40px;
+	line-height: 40px;
+	padding: 0 0 0 10px;
+
+}	
+.cd-dropdown > span span[class^="icon-"],
+.cd-dropdown > span span[class*=" icon-"]{
+	padding: 0 0 0 20px;
+}
+
+@media screen and (max-width: 400px) {
+		
+.cd-dropdown,
+.cd-dropdown > span:after {
+	font-size: 12px;
+}	
+.cd-dropdown{
+	height: 40px;
+	width: 205px;
+}
+/* Texte sichtbares 1. Element*/ 
+.cd-dropdown > span {
+	height: 40px;
+	line-height: 40px;
+	font-size: 12px;
+	padding: 0px 10px 0 10px;
+}
+/* Pfeil Teil */
+.cd-dropdown > span:after {
+	width: 20px;	
+}
+.cd-dropdown ul {
+	width: 205px;
+}
+.cd-dropdown ul li {
+	width: 205px;
+
+}
+/* 1. Austausch Thema */
+.cd-dropdown ul li span {
+	height: 40px;
+	line-height: 40px;
+	padding: 0 0 0 10px;
+
+}	
+.cd-dropdown > span span[class^="icon-"],
+.cd-dropdown > span span[class*=" icon-"]{
+	padding: 0 0 0 20px;
+}
