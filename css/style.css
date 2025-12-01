@@ -1,17 +1,23 @@
-/* Reset und Grundstile */
-* {
+/* AKIM Landing Page - Basierend auf Original-Design */
+
+/* Reset */
+*, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+/* Variablen - AKIM Farbschema */
 :root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --accent-color: #e74c3c;
-    --text-color: #333;
-    --light-bg: #f8f9fa;
-    --white: #ffffff;
+    --akim-bg: #8997B0;
+    --akim-text: #3D4771;
+    --akim-text-dark: #414D5C;
+    --akim-header-text: #566473;
+    --akim-header-bg: #ffffff;
+    --akim-border: #c6d0da;
+    --akim-hover: #5f6f81;
+    --akim-white: #ffffff;
+    --akim-orange: #D35F00;
 }
 
 html {
@@ -19,183 +25,248 @@ html {
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    color: var(--text-color);
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
-}
-
-/* Navigation */
-.navbar {
+    font-family: 'Lato', Calibri, Arial, sans-serif;
+    font-weight: 400;
+    font-size: 15px;
+    color: var(--akim-text);
+    background-color: var(--akim-bg);
+    min-height: 100vh;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 5%;
-    background-color: var(--white);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    flex-direction: column;
+    line-height: 1.6;
+}
+
+/* Header - AKIM Style */
+header {
     position: fixed;
-    width: 100%;
     top: 0;
+    left: 0;
+    width: 100%;
     z-index: 1000;
 }
 
-.logo a {
-    font-size: 1.8rem;
-    font-weight: bold;
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-.nav-links {
-    display: flex;
-    list-style: none;
-    gap: 2rem;
-}
-
-.nav-links a {
-    text-decoration: none;
-    color: var(--text-color);
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-
-.nav-links a:hover {
-    color: var(--secondary-color);
-}
-
-/* Hero Section */
-.hero {
-    height: 100vh;
+.header-bar {
+    background-color: var(--akim-header-bg);
+    height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
+    border-bottom: 1px solid var(--akim-border);
+    padding: 0 20px;
+}
+
+.header-text {
+    font-family: 'Lato', Arial, sans-serif;
+    font-size: 1.5em;
+    font-weight: 800;
+    color: var(--akim-header-text);
+    letter-spacing: 1.1px;
     text-align: center;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: var(--white);
-    padding-top: 80px;
 }
 
-.hero-content h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+/* Main Container */
+main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 20px 40px;
 }
 
-.hero-content p {
-    font-size: 1.25rem;
-    margin-bottom: 2rem;
-    opacity: 0.9;
+.container {
+    max-width: 700px;
+    width: 100%;
 }
 
-.cta-button {
-    display: inline-block;
-    padding: 1rem 2rem;
-    background-color: var(--accent-color);
-    color: var(--white);
-    text-decoration: none;
+/* Logo */
+.logo-container {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo {
+    max-width: 200px;
+    height: auto;
+    box-shadow: 7px 7px 10px -5px rgba(51, 51, 51, 0.8);
+}
+
+/* Message Box */
+.message-box {
+    background-color: var(--akim-white);
+    padding: 40px;
     border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s ease, transform 0.3s ease;
+    box-shadow: 7px 7px 15px -5px rgba(51, 51, 51, 0.5);
 }
 
-.cta-button:hover {
-    background-color: #c0392b;
-    transform: translateY(-2px);
-}
-
-/* Sections */
-section {
-    padding: 5rem 5%;
-}
-
-section h2 {
+.message-box h1 {
+    font-size: 1.8em;
+    font-weight: 600;
+    color: var(--akim-header-text);
+    margin-bottom: 20px;
     text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    color: var(--primary-color);
+    letter-spacing: 1.2px;
 }
 
-/* About */
-.about {
-    background-color: var(--light-bg);
+.intro-text,
+.outro-text {
+    font-size: 1.1em;
+    color: var(--akim-text-dark);
+    margin-bottom: 20px;
+    letter-spacing: 0.5px;
+    line-height: 1.5;
 }
 
-.about p {
+.contact-intro {
+    font-size: 1.1em;
+    color: var(--akim-text-dark);
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+/* Contact Section */
+.contact-section {
+    margin-bottom: 25px;
+    padding-left: 10px;
+}
+
+.contact-item {
+    margin-bottom: 20px;
+}
+
+.contact-item h2 {
+    font-size: 1em;
+    font-weight: 700;
+    color: var(--akim-header-text);
+    margin-bottom: 5px;
+}
+
+.contact-item p {
+    font-size: 1em;
+    color: var(--akim-text-dark);
+}
+
+.contact-item a {
+    color: var(--akim-orange);
+    text-decoration: none;
+    font-weight: 400;
+    transition: color 0.3s ease;
+}
+
+.contact-item a:hover {
+    color: var(--akim-hover);
+    text-decoration: underline;
+}
+
+/* Signature */
+.signature {
+    font-size: 1.1em;
+    color: var(--akim-text-dark);
     text-align: center;
-    max-width: 800px;
-    margin: 0 auto;
-    font-size: 1.1rem;
+    margin-top: 30px;
+    line-height: 1.8;
 }
 
-/* Services */
-.services-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 2rem;
-    margin-top: 3rem;
-}
-
-.service-card {
-    background-color: var(--white);
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    transition: transform 0.3s ease;
-}
-
-.service-card:hover {
-    transform: translateY(-5px);
-}
-
-.service-card h3 {
-    color: var(--primary-color);
-    margin-bottom: 1rem;
-}
-
-/* Contact */
-.contact {
-    background-color: var(--light-bg);
-    text-align: center;
+.signature strong {
+    font-weight: 700;
+    color: var(--akim-header-text);
 }
 
 /* Footer */
 footer {
-    background-color: var(--primary-color);
-    color: var(--white);
-    text-align: center;
-    padding: 2rem;
+    background-color: var(--akim-header-bg);
+    border-top: 1px solid var(--akim-border);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        padding: 1rem;
+.footer-bar {
+    padding: 15px 20px;
+    text-align: center;
+}
+
+.footer-bar p {
+    font-size: 0.85em;
+    color: var(--akim-hover);
+    letter-spacing: 0.5px;
+}
+
+/* Responsive - Tablets */
+@media screen and (max-width: 768px) {
+    .header-bar {
+        height: 50px;
     }
 
-    .nav-links {
-        margin-top: 1rem;
-        gap: 1rem;
+    .header-text {
+        font-size: 1.2em;
     }
 
-    .hero-content h1 {
-        font-size: 2rem;
+    main {
+        padding: 80px 15px 30px;
     }
 
-    .hero-content p {
-        font-size: 1rem;
+    .logo {
+        max-width: 160px;
     }
 
-    section {
-        padding: 3rem 5%;
+    .message-box {
+        padding: 30px 25px;
     }
 
-    section h2 {
-        font-size: 2rem;
+    .message-box h1 {
+        font-size: 1.5em;
+    }
+
+    .intro-text,
+    .outro-text,
+    .contact-intro,
+    .signature {
+        font-size: 1em;
+    }
+}
+
+/* Responsive - Mobile */
+@media screen and (max-width: 480px) {
+    .header-bar {
+        height: 45px;
+    }
+
+    .header-text {
+        font-size: 1em;
+    }
+
+    main {
+        padding: 70px 10px 20px;
+    }
+
+    .logo-container {
+        margin-bottom: 20px;
+    }
+
+    .logo {
+        max-width: 140px;
+    }
+
+    .message-box {
+        padding: 25px 20px;
+    }
+
+    .message-box h1 {
+        font-size: 1.3em;
+    }
+
+    .intro-text,
+    .outro-text,
+    .contact-intro {
+        font-size: 0.95em;
+    }
+
+    .contact-item h2 {
+        font-size: 0.95em;
+    }
+
+    .contact-item p {
+        font-size: 0.9em;
+    }
+
+    .signature {
+        font-size: 0.95em;
     }
 }

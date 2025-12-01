@@ -2,77 +2,109 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="AKIM - Willkommen auf unserer Webseite">
-    <title>AKIM</title>
-    <link rel="stylesheet" href="css/style.css">
+
+    <title>AKIM Getriebetechnik – Swiss Made.</title>
+    <meta name="description" content="AKIM Präzisionsgetriebe sind kompakter und vielseitiger als je zuvor. Verschiedene Varianten ermöglichen zahlreiche Einsatzmöglichkeiten. Im Inneren steckt ein Getriebe der neuesten Generation – hochpräzise, extrem belastbar und besonders langlebig, in Swiss-Made Qualität.">
+    <meta name="keywords" content="zykloid getriebe, automatisierung, präzisionsgetriebe, AKIM, exzenter getriebe, Spielfreie Getriebe, Getriebetechnik, Servogetriebe, Swiss Made">
+    <meta name="identifier-url" content="http://www.akim.ch">
+    <meta name="robots" content="index, follow">
+    <meta name="revisit-after" content="10 days">
+    <meta name="page-topic" content="Engineering, Getriebetechnik, Getriebe und Zentrifugen - Swiss Made.">
+    <meta name="audience" content="all">
+    <meta name="content-language" content="deutsch">
+
+    <link rel="shortcut icon" href="assets/icons/favicon.ico">
     <link rel="icon" type="image/x-icon" href="assets/icons/favicon.ico">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <header>
-        <nav class="navbar">
-            <div class="logo">
-                <a href="index.html">AKIM</a>
-            </div>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">Über uns</a></li>
-                <li><a href="#services">Leistungen</a></li>
-                <li><a href="#contact">Kontakt</a></li>
-            </ul>
-        </nav>
+        <div class="header-bar">
+            <span class="header-text">AKIM Getriebetechnik – Swiss Made.</span>
+        </div>
     </header>
 
     <main>
-        <section id="home" class="hero">
-            <div class="hero-content">
-                <h1>Willkommen bei AKIM</h1>
-                <p>Ihre Beschreibung hier</p>
-                <a href="#contact" class="cta-button">Kontaktieren Sie uns</a>
+        <div class="container">
+            <div class="logo-container">
+                <img src="assets/images/Akim_Signet_2014_gross.jpg" alt="AKIM Logo" class="logo">
             </div>
-        </section>
 
-        <section id="about" class="about">
-            <div class="container">
-                <h2>Über uns</h2>
-                <p>Informationen über AKIM...</p>
-            </div>
-        </section>
+            <div class="message-box">
+                <h1>Bitte entschuldigen Sie</h1>
 
-        <section id="services" class="services">
-            <div class="container">
-                <h2>Unsere Leistungen</h2>
-                <div class="services-grid">
-                    <div class="service-card">
-                        <h3>Leistung 1</h3>
-                        <p>Beschreibung...</p>
+                <p class="intro-text">
+                    Aufgrund eines Problems bei unserem Provider ist unsere offizielle Webseite derzeit nicht erreichbar.
+                    Auch unsere E-Mails funktionieren leider nicht.
+                </p>
+
+                <p class="contact-intro">
+                    Temporär können Sie uns wie folgt erreichen:
+                </p>
+
+                <div class="contact-section">
+                    <div class="contact-item">
+                        <h2>Geschäftsführung:</h2>
+                        <p>Thomas Kaufmann: <a href="#" class="email-link" data-name="thomas.kaufmann" data-domain="greenmail.ch"></a></p>
                     </div>
-                    <div class="service-card">
-                        <h3>Leistung 2</h3>
-                        <p>Beschreibung...</p>
+
+                    <div class="contact-item">
+                        <h2>Verkauf:</h2>
+                        <p>Stefano Torricini: <a href="#" class="email-link" data-name="stefano.torricini" data-domain="greenmail.ch"></a></p>
                     </div>
-                    <div class="service-card">
-                        <h3>Leistung 3</h3>
-                        <p>Beschreibung...</p>
+
+                    <div class="contact-item">
+                        <h2>Produktionsleitung:</h2>
+                        <p>Christoph Stocker: <a href="#" class="email-link" data-name="christoph.stocker" data-domain="greenmail.ch"></a></p>
                     </div>
                 </div>
-            </div>
-        </section>
 
-        <section id="contact" class="contact">
-            <div class="container">
-                <h2>Kontakt</h2>
-                <p>Nehmen Sie Kontakt mit uns auf</p>
+                <p class="outro-text">
+                    Sobald unsere Standarddienste wieder funktionieren, werden wir Sie entsprechend informieren.
+                </p>
+
+                <p class="signature">
+                    Herzlichen Dank für Ihr Verständnis<br>
+                    <strong>Ihr AKIM Team</strong>
+                </p>
             </div>
-        </section>
+        </div>
     </main>
 
     <footer>
-        <div class="container">
-            <p>&copy; 2025 AKIM. Alle Rechte vorbehalten.</p>
+        <div class="footer-bar">
+            <p>&copy; 2025 AKIM AG. Alle Rechte vorbehalten.</p>
         </div>
     </footer>
 
-    <script src="js/main.js"></script>
+    <script>
+        // E-Mail Spam-Schutz: E-Mails werden dynamisch zusammengesetzt
+        document.addEventListener('DOMContentLoaded', function() {
+            var emailLinks = document.querySelectorAll('.email-link');
+
+            emailLinks.forEach(function(link) {
+                var name = link.getAttribute('data-name');
+                var domain = link.getAttribute('data-domain');
+
+                if (name && domain) {
+                    // E-Mail zusammensetzen
+                    var email = name + String.fromCharCode(64) + domain;
+
+                    // mailto: Link setzen
+                    link.setAttribute('href', 'ma' + 'il' + 'to:' + email);
+
+                    // Angezeigten Text setzen (mit HTML Entity für @)
+                    link.innerHTML = name + '&#64;' + domain;
+                }
+            });
+        });
+    </script>
 </body>
 </html>
