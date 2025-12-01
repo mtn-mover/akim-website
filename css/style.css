@@ -157,6 +157,15 @@ main {
     text-decoration: underline;
 }
 
+.phone-link {
+    color: var(--akim-text-dark);
+    font-weight: 500;
+}
+
+.phone-link:hover {
+    color: var(--akim-orange);
+}
+
 /* Signature */
 .signature {
     font-size: 1.1em;
