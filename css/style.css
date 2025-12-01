@@ -180,6 +180,13 @@ main {
     color: var(--akim-header-text);
 }
 
+/* Language Divider */
+.language-divider {
+    border: none;
+    border-top: 2px solid var(--akim-border);
+    margin: 40px 0;
+}
+
 /* Footer */
 footer {
     background-color: var(--akim-header-bg);
