@@ -1,0 +1,51 @@
+name: Auto Deploy to Master
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+
+jobs:
+  auto-merge-to-master:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+      - name: Fetch all branches
+        run: |
+          git fetch origin master:master
+
+      - name: Merge to master
+        run: |
+          git checkout master
+          git merge --no-ff ${{ github.sha }} -m "Auto-merge from ${{ github.ref_name }}"
+
+      - name: Push to master
+        run: |
+          git push origin master
+
+      - name: Notify success
+        if: success()
+        run: |
+          echo "✅ Successfully merged ${{ github.ref_name }} to master"
+          echo "🚀 Vercel deployment will start automatically"
+
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "❌ Failed to merge ${{ github.ref_name }} to master"
+          echo "Please check for conflicts and merge manually"
