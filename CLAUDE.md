@@ -217,6 +217,113 @@ git pull origin <branch-name>
 # Same retry logic applies for network issues
 ```
 
+## Deployment & Vercel Integration
+
+### Current Setup
+
+**Vercel Configuration**:
+- Connected to GitHub repository `mtn-mover/akim-website`
+- Auto-deploy from `master` branch
+- Production URL: Configured in Vercel dashboard
+- `.vercel` directory in `.gitignore`
+
+### Deployment Workflow
+
+**Current Process (with Branch Protection)**:
+1. AI pushes changes to `claude/*` branch ✅
+2. Create Pull Request on GitHub (manually or via link)
+3. Merge PR to `master` branch
+4. Vercel automatically deploys from `master` ✅
+
+**Push to master is protected** - only branches starting with `claude/` can be pushed directly by AI assistants.
+
+### Enabling Direct Deployment (Optional)
+
+If you want AI to push directly to `master` for instant Vercel deployment:
+
+**GitHub Settings → Branches → Branch Protection Rules**:
+
+1. Navigate to: `https://github.com/mtn-mover/akim-website/settings/branches`
+
+2. For `master` branch protection rule, adjust:
+   - ☐ Uncheck "Require a pull request before merging" (for direct pushes)
+   - OR add AI service account to bypass list
+   - OR configure GitHub Actions for auto-merge
+
+3. Alternative: Keep protection but add automation:
+   ```yaml
+   # .github/workflows/auto-deploy.yml
+   name: Auto Deploy
+   on:
+     push:
+       branches: ['claude/**']
+   jobs:
+     merge-to-master:
+       runs-on: ubuntu-latest
+       steps:
+         - uses: actions/checkout@v3
+         - name: Merge to master
+           run: |
+             git config user.name "GitHub Actions"
+             git config user.email "actions@github.com"
+             git fetch origin master
+             git checkout master
+             git merge --ff-only ${{ github.ref }}
+             git push origin master
+   ```
+
+### Manual Deployment (if needed)
+
+If you have Vercel CLI installed locally:
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy to production
+vercel --prod
+
+# Deploy to preview
+vercel
+```
+
+### Vercel Configuration File
+
+Create `vercel.json` for custom configuration (optional):
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "index.html",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
+}
+```
+
+### Deployment Checklist
+
+Before merging to `master`:
+- [ ] All changes committed and pushed to feature branch
+- [ ] Changes reviewed and tested
+- [ ] Both German and English sections updated
+- [ ] No console errors
+- [ ] Responsive design verified
+- [ ] Email obfuscation working
+- [ ] Links functional
+
+After merge:
+- [ ] Verify Vercel deployment started
+- [ ] Check deployment logs in Vercel dashboard
+- [ ] Test live site
+- [ ] Verify DNS/domain configuration
+
 ## Key Conventions
 
 ### HTML
