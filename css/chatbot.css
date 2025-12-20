@@ -446,30 +446,36 @@
 /* Responsive Design */
 @media (max-width: 480px) {
   #akim-chatbot {
-    bottom: 0;
-    right: 0;
+    position: fixed;
+    top: 0;
     left: 0;
-    align-items: flex-end; /* Chat-Fenster am unteren Rand */
+    right: 0;
+    bottom: 0;
+    display: block; /* Kein Flexbox - einfaches Block-Layout */
   }
 
   #akim-chatbot.akim-chat-open {
-    background: rgba(0, 0, 0, 0.5);
+    background: none; /* Kein Overlay nötig bei Fullscreen */
   }
 
   .akim-chat-window {
-    width: 100%;
-    height: 100%;
-    height: 100dvh;
-    max-height: 100%;
-    max-height: 100dvh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
     border-radius: 0;
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto 1fr auto; /* Header, Messages, Input */
   }
 
   .akim-chat-header {
     padding: 10px 12px;
-    flex-shrink: 0;
+    grid-row: 1;
   }
 
   .akim-chat-header h3 {
@@ -489,21 +495,20 @@
     gap: 8px;
   }
 
-  /* Messages-Bereich: Nachrichten am Anfang, nicht zentriert */
+  /* Messages-Bereich */
   .akim-chat-messages {
-    flex: 1 1 auto;
-    min-height: 0; /* Wichtig für Flexbox-Scrolling */
+    grid-row: 2;
+    display: block !important; /* Kein Flexbox! */
     padding: 12px;
-    gap: 8px;
-    display: block; /* Block statt Flex - verhindert die grosse Lücke */
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling auf iOS */
+    -webkit-overflow-scrolling: touch;
   }
 
   .akim-chat-message {
     display: block;
     margin-bottom: 8px;
-    max-width: 90%; /* Mehr Platz für Text auf Mobile */
+    max-width: 90%;
+    clear: both;
   }
 
   .akim-chat-message:last-child {
@@ -511,29 +516,33 @@
   }
 
   .akim-chat-message-user {
-    margin-left: auto; /* User-Nachrichten rechts */
+    float: right; /* User-Nachrichten rechts */
+    clear: both;
   }
 
   .akim-chat-message-assistant {
-    margin-right: auto; /* Bot-Nachrichten links */
+    float: left; /* Bot-Nachrichten links */
+    clear: both;
   }
 
   .akim-chat-message-content {
     padding: 10px 12px;
     font-size: 14px;
     line-height: 1.4;
+    display: inline-block;
   }
 
   .akim-chat-message-time {
     font-size: 10px;
     margin-top: 2px;
+    clear: both;
   }
 
-  /* Input-Bereich: Kompakt und am unteren Rand fixiert */
+  /* Input-Bereich */
   .akim-chat-input-area {
+    grid-row: 3;
     padding: 8px 10px;
     padding-bottom: max(8px, env(safe-area-inset-bottom));
-    flex-shrink: 0;
     background: var(--akim-chat-bg);
     border-top: 1px solid var(--akim-chat-border);
   }
@@ -544,7 +553,7 @@
 
   .akim-chat-input {
     padding: 10px 14px;
-    font-size: 16px; /* Verhindert Zoom auf iOS */
+    font-size: 16px;
     border-radius: 20px;
   }
 
@@ -582,6 +591,7 @@
   .akim-chat-completion {
     padding: 10px;
     margin-top: 8px;
+    clear: both;
   }
 
   .akim-chat-completion p {
@@ -590,6 +600,7 @@
   }
 
   .akim-chat-completion-buttons {
+    display: flex;
     flex-wrap: wrap;
     gap: 8px;
   }
@@ -601,6 +612,12 @@
     flex: 1;
     text-align: center;
     min-width: 120px;
+  }
+
+  /* Typing Indicator */
+  .akim-chat-typing {
+    float: left;
+    clear: both;
   }
 }
 
