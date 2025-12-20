@@ -503,6 +503,29 @@
     widget.querySelector('.akim-chat-header h3').textContent = t('title');
     widget.querySelector('.akim-chat-header p').textContent = t('subtitle');
     widget.querySelector('.akim-chat-input').placeholder = t('placeholder');
+
+    // Begrüssung aktualisieren wenn nur die initiale Nachricht vorhanden ist
+    // (Nur wenn der Nutzer noch nichts geschrieben hat)
+    if (state.messages.length === 1 && state.messages[0].role === 'assistant') {
+      const messagesContainer = document.querySelector('.akim-chat-messages');
+      messagesContainer.innerHTML = '';
+      state.messages = [];
+
+      // Neue Begrüssung in gewählter Sprache
+      if (state.leadData) {
+        // Personalisierte Begrüssung mit Lead-Daten
+        const greetings = {
+          de: `Guten Tag${state.leadData.name ? ' ' + state.leadData.name.split(' ')[0] : ''}! Ich bin Alex, Ihr persönlicher Berater bei AKIM.${state.leadData.company ? ' Ich sehe, Sie kommen von ' + state.leadData.company + '.' : ''} Wie kann ich Ihnen bei der Auswahl des passenden Getriebes helfen? Was möchten Sie antreiben?`,
+          en: `Hello${state.leadData.name ? ' ' + state.leadData.name.split(' ')[0] : ''}! I'm Alex, your personal advisor at AKIM.${state.leadData.company ? ' I see you\'re from ' + state.leadData.company + '.' : ''} How can I help you select the right gearbox? What do you want to drive?`,
+          fr: `Bonjour${state.leadData.name ? ' ' + state.leadData.name.split(' ')[0] : ''}! Je suis Alex, votre conseiller personnel chez AKIM.${state.leadData.company ? ' Je vois que vous venez de ' + state.leadData.company + '.' : ''} Comment puis-je vous aider à choisir le bon réducteur? Qu'est-ce que vous souhaitez entraîner?`,
+          it: `Buongiorno${state.leadData.name ? ' ' + state.leadData.name.split(' ')[0] : ''}! Sono Alex, il suo consulente personale presso AKIM.${state.leadData.company ? ' Vedo che viene da ' + state.leadData.company + '.' : ''} Come posso aiutarla a scegliere il riduttore giusto? Cosa desidera azionare?`
+        };
+        addMessage(greetings[state.language] || greetings.de, 'assistant');
+      } else {
+        // Standard-Begrüssung
+        addMessage(t('greeting'), 'assistant');
+      }
+    }
   }
 
   // Hilfsfunktionen
