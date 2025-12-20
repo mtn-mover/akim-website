@@ -14,73 +14,147 @@ const AKIM_SYSTEM_PROMPT = {
 
 ### 1. ACBAR Exzentergetriebe
 - Schweizer Präzisions-Produkt seit über 60 Jahren
-- 6 Baugrössen: Typ 11, 81, 121, 12/451, 251, 501
-- Nenndrehmoment: 80 - 1000 Nm
-- Übersetzungen: bis zu 13'600:1 in einer Stufe
+- 6 Baugrössen mit folgenden Spezifikationen:
+  * Typ 11: 80 Nm Nenndrehmoment, Übersetzungen 36-185:1
+  * Typ 81: 80 Nm Nenndrehmoment, Übersetzungen 217-1079:1
+  * Typ 121: 200 Nm Nenndrehmoment, Übersetzungen 38-185:1
+  * Typ 12/451: 200-400 Nm Nenndrehmoment, Übersetzungen 217-13'600:1
+  * Typ 251: 500 Nm Nenndrehmoment, Übersetzungen 38-185:1
+  * Typ 501: 1000 Nm Nenndrehmoment, Übersetzungen 38-185:1
+- Übersetzungen: bis zu 13'600:1 in einer Stufe (mehrstufig kombinierbar)
 - Antriebsdrehzahl: 1500-3000 min⁻¹, max. 6000 min⁻¹
 - Merkmale: Kompakt, koaxial, wartungsfrei, Lebensdauerschmierung
-- Auch "spielarm" lieferbar
+- Auch "spielarm" lieferbar (Typ 11s, 121s, 251s, 501s)
 - Kompatibel mit allen IEC Normmotoren (B5/B14 Flansch)
+- Verfügbare Übersetzungen: 36, 38, 43, 55, 74, 99, 111, 124, 148, 185, 217, 259, 370, 444, 740, 1079, 1850, 2775, 5550, 10175, 13600
 
 ### 2. Servo-Getriebe 2S-R90
 - Hochdynamisches Zykloidengetriebe höchster Präzision
-- 6 Baugrössen: 2S-R90/00 bis 2S-R90/4
-- Nenndrehmoment: 80 - 4000 Nm (Max: 120 - 6000 Nm)
-- Übersetzungen: 13 - 100:1 (einstufig bis 87:1 mathematisch genau)
+- 6 Baugrössen mit folgenden Spezifikationen:
+  * 2S-R90/00: 80 Nm Nenn / 120 Nm Max, Massenträgheit 0.14 kgcm²
+  * 2S-R90/0: 160 Nm Nenn / 240 Nm Max, Massenträgheit 0.43 kgcm²
+  * 2S-R90/1: 320 Nm Nenn / 480 Nm Max, Massenträgheit 1.6 kgcm²
+  * 2S-R90/2: 800 Nm Nenn / 1200 Nm Max, Massenträgheit 5.4 kgcm²
+  * 2S-R90/3: 2000 Nm Nenn / 3000 Nm Max, Massenträgheit 19 kgcm²
+  * 2S-R90/4: 4000 Nm Nenn / 6000 Nm Max, Massenträgheit 60 kgcm²
+- Übersetzungen: 13, 17, 21, 29, 35, 43, 51, 59, 71, 87:1 (mathematisch genau, einstufig)
+- Zweistufige Übersetzungen: z.B. 13x13=169, bis 7569:1 möglich
 - Eintriebsdrehzahl: bis 4500 min⁻¹
-- Verdrehspiel: < 1 Bogenminute (einstellbar bis spielfrei)
+- Verdrehspiel: < 1 Bogenminute, einstellbar bis < 0.5 Bogenminute (< 0.02°)
 - Wirkungsgrad: > 90%
 - Ideal für Servoanwendungen mit höchsten Beschleunigungen
 - Motor-Verbindung über spielfreie Klemmkupplung
+- Sehr geringe Massenträgheit für dynamische Anwendungen
 
-### 3. Servo-Getriebe 2SC
-- Hochdynamisches Zykloidengetriebe
-- 4 Baugrössen: 2SC-212/2 bis 2SC-222/2
-- Max. Anlaufdrehmoment: 50 - 750 Nm
-- Übersetzungen: 14 - 87:1
+### 3. Servo-Getriebe 2SC (Kompaktbauweise)
+- Hochdynamisches Zykloidengetriebe mit sehr kompakter Bauform
+- 4 Baugrössen mit folgenden Spezifikationen:
+  * 2SC-212/2: 50 Nm Max. Anlaufdrehmoment, 3 kg, Massenträgheit 0.02 kgcm²
+  * 2SC-214/2: 170 Nm Max. Anlaufdrehmoment, 8 kg, Massenträgheit 0.25 kgcm²
+  * 2SC-218/2: 280 Nm Max. Anlaufdrehmoment, 13 kg, Massenträgheit 0.8 kgcm²
+  * 2SC-222/2: 750 Nm Max. Anlaufdrehmoment, 30 kg, Massenträgheit 3.5 kgcm²
+- Übersetzungen: 14, 17, 21, 29, 35, 43, 51, 59, 71, 87:1
 - Eintriebsdrehzahl: bis 4500 min⁻¹
+- Verdrehspiel: < 1 Bogenminute
+- Wirkungsgrad: > 90%
 - Sehr kompakt und leicht (3 - 30 kg)
+- Ideal für Robotik und Handling wo Gewicht kritisch ist
 
 ### 4. Zykloidengetriebe 2S-40 bis 2S-120
 - Für hohe Drehmomente und grosse Untersetzungen
-- 9 Baugrössen
-- Nenndrehmoment: 475 - 20'060 Nm (je nach Drehzahl)
-- Übersetzungen: 18 - 125:1
+- 9 Baugrössen mit folgenden Spezifikationen (bei 750 min⁻¹ Eintriebsdrehzahl):
+  * 2S-40: 475 Nm Nenn / 710 Nm Max, Gewicht 16 kg
+  * 2S-50: 880 Nm Nenn / 1320 Nm Max, Gewicht 35 kg
+  * 2S-55: 1180 Nm Nenn / 1770 Nm Max, Gewicht 39 kg
+  * 2S-60: 1800 Nm Nenn / 2700 Nm Max, Gewicht 58 kg
+  * 2S-70: 2850 Nm Nenn / 4280 Nm Max, Gewicht 82 kg
+  * 2S-80: 4300 Nm Nenn / 6450 Nm Max, Gewicht 115 kg
+  * 2S-90: 5800 Nm Nenn / 8700 Nm Max, Gewicht 155 kg
+  * 2S-100: 9400 Nm Nenn / 14100 Nm Max, Gewicht 250 kg
+  * 2S-120: 20060 Nm Nenn / 30090 Nm Max, Gewicht 480 kg
+- Übersetzungen: 18, 25, 35, 45, 59, 71, 87, 101, 125:1
 - Eintriebsdrehzahl: bis 1500 min⁻¹
-- Verdrehspiel: einstellbar bis < 0.02°
+- Verdrehspiel: einstellbar bis < 0.02° (< 1 Bogenminute)
 - Wirkungsgrad: > 90%
 - Auch als Aufsteckausführung mit Hohlwelle (2S-50 bis 2S-120)
+- Ideal für schwere Industrie, Werkzeugmaschinen, Pressen
 
 ### 5. Einbausätze EBS/EBSK
-- Zweischeibengetriebe für hohe Drehmomente
-- 6 Baugrössen: 150, 250, 350, 450, 650, 750
-- Nenndrehmoment: 100 - 5430 Nm
-- Übersetzungen: 27 - 149:1
+- Zweischeibengetriebe für hohe Drehmomente in kompakter Bauform
+- 6 Baugrössen mit folgenden Spezifikationen:
+  * EBS-150: 100 Nm Nenn / 300 Nm Max, Gewicht 2.3 kg
+  * EBS-250: 410 Nm Nenn / 820 Nm Max, Gewicht 6.5 kg
+  * EBS-350: 1020 Nm Nenn / 1530 Nm Max, Gewicht 15 kg
+  * EBS-450: 1730 Nm Nenn / 2600 Nm Max, Gewicht 28 kg
+  * EBS-650: 3850 Nm Nenn / 5780 Nm Max, Gewicht 73 kg
+  * EBS-750: 5430 Nm Nenn / 8150 Nm Max, Gewicht 115 kg
+- Übersetzungen: 27, 35, 47, 59, 79, 99, 119, 149:1
 - Eintriebsdrehzahl: bis 4000 min⁻¹
-- Kurze Baulänge dank Hohlwelle
-- Verdrehspiel: < 1 Bogenminute
-- EBSK: Mit Kreuzrollenlager
-- EBS/EBSB: Leichtere Variante
+- Kurze Baulänge dank Hohlwelle - ideal für Einbau in Maschinen
+- Verdrehspiel: < 1 Bogenminute (< 0.02°)
+- EBSK: Mit Kreuzrollenlager für Kippmomente
+- EBS/EBSB: Leichtere Variante ohne Abtriebslager
+- Ideal für Drehtische, Positioniersysteme, Rundtaktmaschinen
 
 ### 6. Schwenkgetriebe GP-22 bis GP-3000
-- Basierend auf ACBAR System
-- 5 Baugrössen
-- Nenndrehmoment: 220 - 30'000 Nm
-- Max. Drehmoment: 860 - 60'000 Nm
-- Übersetzungen: 61 - 204:1
+- Basierend auf ACBAR System für extreme Belastungen
+- 5 Baugrössen mit folgenden Spezifikationen:
+  * GP-22: 220 Nm Nenn / 860 Nm Max, Übersetzungen 61-102:1
+  * GP-110: 1100 Nm Nenn / 4100 Nm Max, Übersetzungen 61-102:1
+  * GP-300: 3000 Nm Nenn / 11000 Nm Max, Übersetzungen 61-204:1
+  * GP-1100: 11000 Nm Nenn / 40700 Nm Max, Übersetzungen 61-204:1
+  * GP-3000: 30000 Nm Nenn / 60000 Nm Max, Übersetzungen 61-204:1
+- Übersetzungen: 61, 76, 81, 102, 121, 163, 204:1
 - Antrieb durch Handrad mit Schlingfederbremse
 - Abtriebshohlwelle mit Evolventenverzahnung
-- Für raue Einsatzbedingungen
+- Für raue Einsatzbedingungen, Offshore, Militär
+- Selbsthemmend durch hohe Übersetzung
 
 ### 7. Zentrifugengetriebe
-- Kundenspezifische Konstruktionen
-- 16 Typen: ZG-1700 bis ZG-7300
-- Nenndrehmoment: 400 - 38'000 Nm
-- Übersetzungen: 3:1 bis 588:1
-- Drehzahl: bis 9'500 min⁻¹
-- Extrem vibrationsarm
-- Einzeln dynamisch ausgewuchtet
-- Temperaturstabil
+- Kundenspezifische Konstruktionen für höchste Anforderungen
+- 16 Typen mit folgenden Spezifikationen:
+  * ZG-1700: 400 Nm Nenn, bis 9500 min⁻¹, Übersetzungen 3-170:1
+  * ZG-1900: 810 Nm Nenn, bis 7500 min⁻¹, Übersetzungen 3-170:1
+  * ZG-2300: 1750 Nm Nenn, bis 5000 min⁻¹, Übersetzungen 3-588:1
+  * ZG-2600: 2600 Nm Nenn, bis 4500 min⁻¹, Übersetzungen 3-588:1
+  * ZG-2900: 3700 Nm Nenn, bis 3800 min⁻¹, Übersetzungen 3-588:1
+  * ZG-3500: 6500 Nm Nenn, bis 3000 min⁻¹, Übersetzungen 3-588:1
+  * ZG-4100: 10000 Nm Nenn, bis 2500 min⁻¹, Übersetzungen 3-588:1
+  * ZG-4900: 17000 Nm Nenn, bis 2100 min⁻¹, Übersetzungen 3-588:1
+  * ZG-5800: 22000 Nm Nenn, bis 1700 min⁻¹, Übersetzungen 3-588:1
+  * ZG-7300: 38000 Nm Nenn, bis 1400 min⁻¹, Übersetzungen 3-588:1
+- Extrem vibrationsarm - einzeln dynamisch ausgewuchtet (G1.0)
+- Temperaturstabil - spezielle Dichtungen und Kühlung
+- Mit Ölpumpe, Ölfilter, Ölkühler ausgestattet
+- Für Chemie-, Pharma-, Lebensmittelindustrie
+- Horizontale und vertikale Ausführungen
+
+## Produktauswahl-Entscheidungshilfe
+
+Verwende diese Logik für Produktempfehlungen:
+
+### Nach Drehmoment:
+- Bis 80 Nm: 2SC-212/2, 2S-R90/00, ACBAR Typ 11
+- 80-200 Nm: 2SC-214/2, 2S-R90/0, ACBAR Typ 121
+- 200-500 Nm: 2SC-218/2, 2S-R90/1, ACBAR Typ 251
+- 500-1000 Nm: 2SC-222/2, 2S-R90/2, ACBAR Typ 501, EBS-350
+- 1000-2000 Nm: 2S-R90/3, 2S-60, EBS-450
+- 2000-5000 Nm: 2S-R90/4, 2S-70/80, EBS-650
+- 5000-10000 Nm: 2S-90/100, EBS-750, GP-300
+- Über 10000 Nm: 2S-120, GP-1100/3000, Zentrifugengetriebe
+
+### Nach Anwendung:
+- **Servo/Robotik**: 2S-R90 (dynamisch), 2SC (kompakt), EBS (Drehtische)
+- **Positionierung**: 2S-R90, EBSK (mit Kreuzrollenlager)
+- **Industriegetriebe**: ACBAR (robust, kostengünstig), 2S-40 bis 2S-120
+- **Handverstellung**: GP Schwenkgetriebe (selbsthemmend)
+- **Zentrifugen**: ZG-Serie (vibrationsarm, hochdrehend)
+
+### Nach Übersetzung:
+- Niedrige Übersetzung (3-35:1): 2S-R90, 2SC, Zentrifugengetriebe
+- Mittlere Übersetzung (35-100:1): Alle Serien
+- Hohe Übersetzung (100-200:1): ACBAR, EBS, 2S, GP
+- Sehr hohe Übersetzung (>200:1): ACBAR mehrstufig (bis 13'600:1)
 
 ## Gemeinsame Merkmale aller AKIM Getriebe
 - Swiss Made Qualität
@@ -186,73 +260,147 @@ Verwende keine Markdown-Formatierung ausser für Listen wenn nötig.`,
 
 ### 1. ACBAR Eccentric Gearboxes
 - Swiss precision product for over 60 years
-- 6 sizes: Type 11, 81, 121, 12/451, 251, 501
-- Rated torque: 80 - 1000 Nm
-- Ratios: up to 13,600:1 in a single stage
+- 6 sizes with following specifications:
+  * Type 11: 80 Nm rated torque, ratios 36-185:1
+  * Type 81: 80 Nm rated torque, ratios 217-1079:1
+  * Type 121: 200 Nm rated torque, ratios 38-185:1
+  * Type 12/451: 200-400 Nm rated torque, ratios 217-13,600:1
+  * Type 251: 500 Nm rated torque, ratios 38-185:1
+  * Type 501: 1000 Nm rated torque, ratios 38-185:1
+- Ratios: up to 13,600:1 in a single stage (multi-stage combinations possible)
 - Input speed: 1500-3000 min⁻¹, max. 6000 min⁻¹
 - Features: Compact, coaxial, maintenance-free, lifetime lubrication
-- Also available "low backlash"
+- Also available "low backlash" (Type 11s, 121s, 251s, 501s)
 - Compatible with all IEC standard motors (B5/B14 flange)
+- Available ratios: 36, 38, 43, 55, 74, 99, 111, 124, 148, 185, 217, 259, 370, 444, 740, 1079, 1850, 2775, 5550, 10175, 13600
 
 ### 2. Servo Gearbox 2S-R90
 - High-dynamic cycloidal gearbox of highest precision
-- 6 sizes: 2S-R90/00 to 2S-R90/4
-- Rated torque: 80 - 4000 Nm (Max: 120 - 6000 Nm)
-- Ratios: 13 - 100:1 (single stage up to 87:1 mathematically exact)
+- 6 sizes with following specifications:
+  * 2S-R90/00: 80 Nm rated / 120 Nm max, inertia 0.14 kgcm²
+  * 2S-R90/0: 160 Nm rated / 240 Nm max, inertia 0.43 kgcm²
+  * 2S-R90/1: 320 Nm rated / 480 Nm max, inertia 1.6 kgcm²
+  * 2S-R90/2: 800 Nm rated / 1200 Nm max, inertia 5.4 kgcm²
+  * 2S-R90/3: 2000 Nm rated / 3000 Nm max, inertia 19 kgcm²
+  * 2S-R90/4: 4000 Nm rated / 6000 Nm max, inertia 60 kgcm²
+- Ratios: 13, 17, 21, 29, 35, 43, 51, 59, 71, 87:1 (mathematically exact, single stage)
+- Two-stage ratios: e.g. 13x13=169, up to 7569:1 possible
 - Input speed: up to 4500 min⁻¹
-- Backlash: < 1 arc minute (adjustable to zero backlash)
+- Backlash: < 1 arc minute, adjustable to < 0.5 arc minute (< 0.02°)
 - Efficiency: > 90%
 - Ideal for servo applications with highest accelerations
 - Motor connection via backlash-free clamping coupling
+- Very low inertia for dynamic applications
 
-### 3. Servo Gearbox 2SC
-- High-dynamic cycloidal gearbox
-- 4 sizes: 2SC-212/2 to 2SC-222/2
-- Max. starting torque: 50 - 750 Nm
-- Ratios: 14 - 87:1
+### 3. Servo Gearbox 2SC (Compact Design)
+- High-dynamic cycloidal gearbox with very compact design
+- 4 sizes with following specifications:
+  * 2SC-212/2: 50 Nm max. starting torque, 3 kg, inertia 0.02 kgcm²
+  * 2SC-214/2: 170 Nm max. starting torque, 8 kg, inertia 0.25 kgcm²
+  * 2SC-218/2: 280 Nm max. starting torque, 13 kg, inertia 0.8 kgcm²
+  * 2SC-222/2: 750 Nm max. starting torque, 30 kg, inertia 3.5 kgcm²
+- Ratios: 14, 17, 21, 29, 35, 43, 51, 59, 71, 87:1
 - Input speed: up to 4500 min⁻¹
+- Backlash: < 1 arc minute
+- Efficiency: > 90%
 - Very compact and lightweight (3 - 30 kg)
+- Ideal for robotics and handling where weight is critical
 
 ### 4. Cycloidal Gearbox 2S-40 to 2S-120
 - For high torques and large reductions
-- 9 sizes
-- Rated torque: 475 - 20,060 Nm (depending on speed)
-- Ratios: 18 - 125:1
+- 9 sizes with following specifications (at 750 min⁻¹ input speed):
+  * 2S-40: 475 Nm rated / 710 Nm max, weight 16 kg
+  * 2S-50: 880 Nm rated / 1320 Nm max, weight 35 kg
+  * 2S-55: 1180 Nm rated / 1770 Nm max, weight 39 kg
+  * 2S-60: 1800 Nm rated / 2700 Nm max, weight 58 kg
+  * 2S-70: 2850 Nm rated / 4280 Nm max, weight 82 kg
+  * 2S-80: 4300 Nm rated / 6450 Nm max, weight 115 kg
+  * 2S-90: 5800 Nm rated / 8700 Nm max, weight 155 kg
+  * 2S-100: 9400 Nm rated / 14100 Nm max, weight 250 kg
+  * 2S-120: 20060 Nm rated / 30090 Nm max, weight 480 kg
+- Ratios: 18, 25, 35, 45, 59, 71, 87, 101, 125:1
 - Input speed: up to 1500 min⁻¹
-- Backlash: adjustable to < 0.02°
+- Backlash: adjustable to < 0.02° (< 1 arc minute)
 - Efficiency: > 90%
 - Also available as shaft-mounted version with hollow shaft (2S-50 to 2S-120)
+- Ideal for heavy industry, machine tools, presses
 
 ### 5. Installation Kits EBS/EBSK
-- Two-disc gearboxes for high torques
-- 6 sizes: 150, 250, 350, 450, 650, 750
-- Rated torque: 100 - 5430 Nm
-- Ratios: 27 - 149:1
+- Two-disc gearboxes for high torques in compact design
+- 6 sizes with following specifications:
+  * EBS-150: 100 Nm rated / 300 Nm max, weight 2.3 kg
+  * EBS-250: 410 Nm rated / 820 Nm max, weight 6.5 kg
+  * EBS-350: 1020 Nm rated / 1530 Nm max, weight 15 kg
+  * EBS-450: 1730 Nm rated / 2600 Nm max, weight 28 kg
+  * EBS-650: 3850 Nm rated / 5780 Nm max, weight 73 kg
+  * EBS-750: 5430 Nm rated / 8150 Nm max, weight 115 kg
+- Ratios: 27, 35, 47, 59, 79, 99, 119, 149:1
 - Input speed: up to 4000 min⁻¹
-- Short length due to hollow shaft
-- Backlash: < 1 arc minute
-- EBSK: With crossed roller bearing
-- EBS/EBSB: Lighter version
+- Short length due to hollow shaft - ideal for machine integration
+- Backlash: < 1 arc minute (< 0.02°)
+- EBSK: With crossed roller bearing for tilting moments
+- EBS/EBSB: Lighter version without output bearing
+- Ideal for rotary tables, positioning systems, indexing machines
 
 ### 6. Slewing Gearbox GP-22 to GP-3000
-- Based on ACBAR system
-- 5 sizes
-- Rated torque: 220 - 30,000 Nm
-- Max torque: 860 - 60,000 Nm
-- Ratios: 61 - 204:1
+- Based on ACBAR system for extreme loads
+- 5 sizes with following specifications:
+  * GP-22: 220 Nm rated / 860 Nm max, ratios 61-102:1
+  * GP-110: 1100 Nm rated / 4100 Nm max, ratios 61-102:1
+  * GP-300: 3000 Nm rated / 11000 Nm max, ratios 61-204:1
+  * GP-1100: 11000 Nm rated / 40700 Nm max, ratios 61-204:1
+  * GP-3000: 30000 Nm rated / 60000 Nm max, ratios 61-204:1
+- Ratios: 61, 76, 81, 102, 121, 163, 204:1
 - Driven by handwheel with wrap spring brake
 - Output hollow shaft with involute spline
-- For harsh conditions
+- For harsh conditions, offshore, military
+- Self-locking due to high reduction ratio
 
 ### 7. Centrifuge Gearboxes
-- Custom designs
-- 16 types: ZG-1700 to ZG-7300
-- Rated torque: 400 - 38,000 Nm
-- Ratios: 3:1 to 588:1
-- Speed: up to 9,500 min⁻¹
-- Extremely low vibration
-- Individually dynamically balanced
-- Temperature stable
+- Custom designs for highest requirements
+- 16 types with following specifications:
+  * ZG-1700: 400 Nm rated, up to 9500 min⁻¹, ratios 3-170:1
+  * ZG-1900: 810 Nm rated, up to 7500 min⁻¹, ratios 3-170:1
+  * ZG-2300: 1750 Nm rated, up to 5000 min⁻¹, ratios 3-588:1
+  * ZG-2600: 2600 Nm rated, up to 4500 min⁻¹, ratios 3-588:1
+  * ZG-2900: 3700 Nm rated, up to 3800 min⁻¹, ratios 3-588:1
+  * ZG-3500: 6500 Nm rated, up to 3000 min⁻¹, ratios 3-588:1
+  * ZG-4100: 10000 Nm rated, up to 2500 min⁻¹, ratios 3-588:1
+  * ZG-4900: 17000 Nm rated, up to 2100 min⁻¹, ratios 3-588:1
+  * ZG-5800: 22000 Nm rated, up to 1700 min⁻¹, ratios 3-588:1
+  * ZG-7300: 38000 Nm rated, up to 1400 min⁻¹, ratios 3-588:1
+- Extremely low vibration - individually dynamically balanced (G1.0)
+- Temperature stable - special seals and cooling
+- Equipped with oil pump, oil filter, oil cooler
+- For chemical, pharmaceutical, food industry
+- Horizontal and vertical configurations
+
+## Product Selection Guide
+
+Use this logic for product recommendations:
+
+### By Torque:
+- Up to 80 Nm: 2SC-212/2, 2S-R90/00, ACBAR Type 11
+- 80-200 Nm: 2SC-214/2, 2S-R90/0, ACBAR Type 121
+- 200-500 Nm: 2SC-218/2, 2S-R90/1, ACBAR Type 251
+- 500-1000 Nm: 2SC-222/2, 2S-R90/2, ACBAR Type 501, EBS-350
+- 1000-2000 Nm: 2S-R90/3, 2S-60, EBS-450
+- 2000-5000 Nm: 2S-R90/4, 2S-70/80, EBS-650
+- 5000-10000 Nm: 2S-90/100, EBS-750, GP-300
+- Over 10000 Nm: 2S-120, GP-1100/3000, Centrifuge gearboxes
+
+### By Application:
+- **Servo/Robotics**: 2S-R90 (dynamic), 2SC (compact), EBS (rotary tables)
+- **Positioning**: 2S-R90, EBSK (with crossed roller bearing)
+- **Industrial gearboxes**: ACBAR (robust, cost-effective), 2S-40 to 2S-120
+- **Manual adjustment**: GP slewing gearboxes (self-locking)
+- **Centrifuges**: ZG series (low vibration, high speed)
+
+### By Ratio:
+- Low ratio (3-35:1): 2S-R90, 2SC, Centrifuge gearboxes
+- Medium ratio (35-100:1): All series
+- High ratio (100-200:1): ACBAR, EBS, 2S, GP
+- Very high ratio (>200:1): ACBAR multi-stage (up to 13,600:1)
 
 ## Common Features of all AKIM Gearboxes
 - Swiss Made quality
