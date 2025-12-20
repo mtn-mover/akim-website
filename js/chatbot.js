@@ -41,7 +41,10 @@
       sent: 'Anfrage gesendet!',
       confirmSend: 'Möchten Sie die Anfrage absenden?',
       yes: 'Ja, absenden',
-      no: 'Nein, weiter bearbeiten'
+      no: 'Nein, weiter bearbeiten',
+      endPrompt: 'Wie möchten Sie fortfahren?',
+      endChat: 'Chat beenden',
+      newInquiry: 'Neue Anfrage besprechen'
     },
     en: {
       title: 'Alex - AKIM Advisor',
@@ -56,7 +59,10 @@
       sent: 'Inquiry sent!',
       confirmSend: 'Would you like to send the inquiry?',
       yes: 'Yes, send',
-      no: 'No, continue editing'
+      no: 'No, continue editing',
+      endPrompt: 'How would you like to continue?',
+      endChat: 'End chat',
+      newInquiry: 'Discuss new inquiry'
     },
     fr: {
       title: 'Alex - Conseiller AKIM',
@@ -71,7 +77,10 @@
       sent: 'Demande envoyée!',
       confirmSend: 'Voulez-vous envoyer la demande?',
       yes: 'Oui, envoyer',
-      no: 'Non, continuer'
+      no: 'Non, continuer',
+      endPrompt: 'Comment souhaitez-vous continuer?',
+      endChat: 'Terminer le chat',
+      newInquiry: 'Nouvelle demande'
     },
     it: {
       title: 'Alex - Consulente AKIM',
@@ -86,7 +95,10 @@
       sent: 'Richiesta inviata!',
       confirmSend: 'Vuole inviare la richiesta?',
       yes: 'Sì, invia',
-      no: 'No, continua'
+      no: 'No, continua',
+      endPrompt: 'Come desidera procedere?',
+      endChat: 'Termina chat',
+      newInquiry: 'Nuova richiesta'
     }
   };
 
@@ -380,12 +392,17 @@
       setTimeout(() => {
         if (completionEl) completionEl.remove();
         const successMessages = {
-          de: 'Vielen Dank! Ihre Anfrage wurde an unser Verkaufsteam gesendet. Sie erhalten innerhalb von 48 Stunden eine Offerte per E-Mail.',
-          en: 'Thank you! Your inquiry has been sent to our sales team. You will receive a quote by email within 48 hours.',
-          fr: 'Merci! Votre demande a été envoyée à notre équipe commerciale. Vous recevrez un devis par email dans les 48 heures.',
-          it: 'Grazie! La sua richiesta è stata inviata al nostro team di vendita. Riceverà un preventivo via email entro 48 ore.'
+          de: 'Vielen Dank! Ihre Anfrage wurde an unser Verkaufsteam gesendet. Sie erhalten innerhalb von 2 Arbeitstagen eine Offerte per E-Mail.',
+          en: 'Thank you! Your inquiry has been sent to our sales team. You will receive a quote by email within 2 business days.',
+          fr: 'Merci! Votre demande a été envoyée à notre équipe commerciale. Vous recevrez un devis par email dans les 2 jours ouvrables.',
+          it: 'Grazie! La sua richiesta è stata inviata al nostro team di vendita. Riceverà un preventivo via email entro 2 giorni lavorativi.'
         };
         addMessage(successMessages[state.language] || successMessages.de, 'assistant');
+
+        // End-Popup nach kurzer Verzögerung anzeigen
+        setTimeout(() => {
+          showEndPrompt();
+        }, 1500);
       }, 1500);
 
     } catch (error) {
@@ -394,6 +411,44 @@
         completionEl.innerHTML = `<p class="akim-error">${t('error')}</p>`;
       }
     }
+  }
+
+  // End-Dialog anzeigen (Chat beenden oder neue Anfrage)
+  function showEndPrompt() {
+    const messagesContainer = document.querySelector('.akim-chat-messages');
+    const promptEl = document.createElement('div');
+    promptEl.className = 'akim-chat-completion akim-chat-end-prompt';
+    promptEl.innerHTML = `
+      <p>${t('endPrompt')}</p>
+      <div class="akim-chat-completion-buttons">
+        <button class="akim-btn-secondary" data-action="end">${t('endChat')}</button>
+        <button class="akim-btn-primary" data-action="new">${t('newInquiry')}</button>
+      </div>
+    `;
+
+    promptEl.querySelector('[data-action="end"]').addEventListener('click', () => {
+      promptEl.remove();
+      toggleChat(false);
+    });
+
+    promptEl.querySelector('[data-action="new"]').addEventListener('click', () => {
+      promptEl.remove();
+      // Chat zurücksetzen für neue Anfrage
+      state.messages = [];
+      const messagesEl = document.querySelector('.akim-chat-messages');
+      messagesEl.innerHTML = '';
+      // Neue Begrüssung
+      const newInquiryGreeting = {
+        de: 'Gerne! Was für ein Getriebe benötigen Sie für Ihre nächste Anwendung?',
+        en: 'Sure! What kind of gearbox do you need for your next application?',
+        fr: 'Bien sûr! Quel type de réducteur avez-vous besoin pour votre prochaine application?',
+        it: 'Certamente! Che tipo di riduttore le serve per la sua prossima applicazione?'
+      };
+      addMessage(newInquiryGreeting[state.language] || newInquiryGreeting.de, 'assistant');
+    });
+
+    messagesContainer.appendChild(promptEl);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
   // Anfragedaten aus Konversation extrahieren
