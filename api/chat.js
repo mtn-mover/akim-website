@@ -39,10 +39,25 @@ module.exports = async function handler(req, res) {
       return;
     }
 
-    // Sprache: Client-Sprache bevorzugen, sonst aus Nachricht erkennen
-    const firstUserMessage = messages.find(m => m.role === 'user');
-    const language = clientLanguage || (firstUserMessage ? detectLanguage(firstUserMessage.content) : 'de');
+    // Sprache: Client-Sprache hat IMMER Priorität (vom Sprachauswahl-Dropdown)
+    // Nur wenn keine Client-Sprache gesetzt ist, versuche aus Nachricht zu erkennen
+    let language = clientLanguage;
+    if (!language) {
+      const firstUserMessage = messages.find(m => m.role === 'user');
+      language = firstUserMessage ? detectLanguage(firstUserMessage.content) : 'de';
+    }
+
+    // System-Prompt in der gewählten Sprache + Anweisung zur Sprachkonsistenz
     let systemPrompt = AKIM_SYSTEM_PROMPT[language] || AKIM_SYSTEM_PROMPT.de;
+
+    // Zusätzliche Anweisung: Sprache beibehalten
+    const languageInstruction = {
+      de: '\n\nWICHTIG: Antworte IMMER auf Deutsch, unabhängig davon in welcher Sprache der Kunde schreibt. Die Sprache wurde vom Kunden explizit gewählt.',
+      en: '\n\nIMPORTANT: ALWAYS respond in English, regardless of which language the customer writes in. The language was explicitly chosen by the customer.',
+      fr: '\n\nIMPORTANT: Réponds TOUJOURS en français, quelle que soit la langue dans laquelle le client écrit. La langue a été explicitement choisie par le client.',
+      it: '\n\nIMPORTANTE: Rispondi SEMPRE in italiano, indipendentemente dalla lingua in cui scrive il cliente. La lingua è stata scelta esplicitamente dal cliente.'
+    };
+    systemPrompt += languageInstruction[language] || languageInstruction.de;
 
     // Lead-Daten in System-Prompt einfügen wenn vorhanden
     if (leadData) {
