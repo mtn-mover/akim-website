@@ -23,7 +23,8 @@
     sessionId: null,
     language: 'de',
     collectedData: {},
-    leadData: null  // Daten aus dem Lead-Formular
+    leadData: null,  // Daten aus dem Lead-Formular
+    languageLocked: false  // Sprache gesperrt nach erster User-Nachricht
   };
 
   // Übersetzungen
@@ -192,8 +193,13 @@
       }
     });
 
-    // Sprache wechseln
+    // Sprache wechseln (nur wenn noch nicht gesperrt)
     langSelect.addEventListener('change', (e) => {
+      if (state.languageLocked) {
+        // Zurücksetzen auf gesperrte Sprache
+        e.target.value = state.language;
+        return;
+      }
       state.language = e.target.value;
       updateUILanguage();
     });
@@ -281,10 +287,30 @@
     if (typingEl) typingEl.remove();
   }
 
+  // Sprachauswahl sperren (nach erster User-Nachricht)
+  function lockLanguageSelect() {
+    const langSelect = document.querySelector('.akim-lang-select');
+    if (langSelect) {
+      langSelect.disabled = true;
+      langSelect.style.opacity = '0.5';
+      langSelect.style.cursor = 'not-allowed';
+      langSelect.title = state.language === 'de' ? 'Sprache ist für diese Session gesperrt' :
+                         state.language === 'en' ? 'Language is locked for this session' :
+                         state.language === 'fr' ? 'Langue verrouillée pour cette session' :
+                         'Lingua bloccata per questa sessione';
+    }
+  }
+
   // Nachricht an API senden
   async function sendMessage(content) {
     // Benutzer-Nachricht anzeigen
     addMessage(content, 'user');
+
+    // Sprache nach erster User-Nachricht sperren
+    if (!state.languageLocked) {
+      state.languageLocked = true;
+      lockLanguageSelect();
+    }
 
     state.isLoading = true;
     showTyping();
@@ -309,13 +335,6 @@
       const data = await response.json();
 
       hideTyping();
-
-      // Sprache aktualisieren wenn erkannt
-      if (data.language && data.language !== state.language) {
-        state.language = data.language;
-        document.querySelector('.akim-lang-select').value = data.language;
-        updateUILanguage();
-      }
 
       // Session ID speichern
       if (data.sessionId) {
