@@ -53,8 +53,8 @@
                 </div>
             </div>
 
-            <a href="#contact-form" class="cta-button">
-                <span>Zum Kontaktformular</span>
+            <a href="#lead-form" class="cta-button">
+                <span>Beratung starten</span>
                 <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 4l-1.41 1.41L16.17 11H4v2h12.17l-5.58 5.59L12 20l8-8z"/></svg>
             </a>
         </div>
@@ -224,12 +224,12 @@
                 }
             });
 
-            // Smooth scroll für CTA mit Offset
+            // Smooth scroll für CTA direkt zum Formular
             document.querySelector('.cta-button').addEventListener('click', function(e) {
                 e.preventDefault();
-                var contactSection = document.getElementById('contact-form');
+                var leadForm = document.getElementById('lead-form');
                 var offset = 20; // Etwas Abstand oben
-                var elementPosition = contactSection.getBoundingClientRect().top;
+                var elementPosition = leadForm.getBoundingClientRect().top;
                 var offsetPosition = elementPosition + window.pageYOffset - offset;
 
                 window.scrollTo({
