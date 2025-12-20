@@ -10,6 +10,7 @@
   const CONFIG = {
     apiEndpoint: '/api/chat',
     sendEndpoint: '/api/send-inquiry',
+    saveEndpoint: '/api/save-inquiry',
     maxMessages: 50,
     typingDelay: 500,
     requireLeadForm: true  // Chatbot erst nach Formular öffnen
@@ -391,6 +392,32 @@
       // Daten aus Konversation extrahieren
       const inquiry = extractInquiryData();
 
+      // Zusammenfassung generieren lassen
+      const summary = await generateSummary();
+
+      // In Datenbank speichern
+      const saveResponse = await fetch(CONFIG.saveEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: state.sessionId,
+          leadData: state.leadData,
+          messages: state.messages.map(m => ({
+            role: m.role,
+            content: m.content,
+            timestamp: m.timestamp
+          })),
+          summary: summary,
+          language: state.language,
+          technicalData: inquiry
+        })
+      });
+
+      if (!saveResponse.ok) {
+        console.error('Failed to save inquiry to database');
+      }
+
+      // E-Mail an Verkauf senden (bestehender Endpunkt)
       const response = await fetch(CONFIG.sendEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -430,6 +457,32 @@
         completionEl.innerHTML = `<p class="akim-error">${t('error')}</p>`;
       }
     }
+  }
+
+  // Zusammenfassung vom Backend generieren lassen
+  async function generateSummary() {
+    try {
+      const response = await fetch('/api/generate-summary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: state.messages.map(m => ({
+            role: m.role,
+            content: m.content
+          })),
+          leadData: state.leadData,
+          language: state.language
+        })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        return data.summary;
+      }
+    } catch (error) {
+      console.error('Summary generation failed:', error);
+    }
+    return null;
   }
 
   // End-Dialog anzeigen (Chat beenden oder neue Anfrage)

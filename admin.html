@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKIM Chatbot Admin - Anfragen</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32x32.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3D4771;
+            --accent: #D35F00;
+            --bg: #f5f7fa;
+            --card-bg: #ffffff;
+            --text: #333333;
+            --text-light: #666666;
+            --border: #e0e0e0;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        /* Header */
+        .admin-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .admin-header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-header img {
+            height: 35px;
+        }
+
+        .admin-nav {
+            display: flex;
+            gap: 10px;
+        }
+
+        .admin-nav button {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+
+        .admin-nav button:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .admin-nav button.active {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        /* Login Form */
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 30px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary);
+        }
+
+        .login-form .form-group {
+            margin-bottom: 15px;
+        }
+
+        .login-form label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .login-form input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        .login-form button {
+            width: 100%;
+            padding: 12px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .login-form button:hover {
+            background: #c45500;
+        }
+
+        .login-error {
+            color: var(--danger);
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        /* Main Content */
+        .admin-content {
+            padding: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+            display: none;
+        }
+
+        .admin-content.active {
+            display: block;
+        }
+
+        /* Stats Row */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .stat-card h3 {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 5px;
+        }
+
+        .stat-card .value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-card.new .value {
+            color: var(--success);
+        }
+
+        /* Filters */
+        .filters-row {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--border);
+            background: white;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .filter-btn.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .filter-btn .count {
+            background: rgba(0,0,0,0.1);
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 5px;
+            font-size: 12px;
+        }
+
+        .filter-btn.active .count {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Inquiries Table */
+        .inquiries-table {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 80px 1fr 1fr 150px 120px 100px;
+            padding: 15px 20px;
+            background: var(--bg);
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .inquiry-row {
+            display: grid;
+            grid-template-columns: 80px 1fr 1fr 150px 120px 100px;
+            padding: 15px 20px;
+            border-bottom: 1px solid var(--border);
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .inquiry-row:hover {
+            background: #f8f9fa;
+        }
+
+        .inquiry-row:last-child {
+            border-bottom: none;
+        }
+
+        .inquiry-id {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .inquiry-customer {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .inquiry-customer .name {
+            font-weight: 500;
+        }
+
+        .inquiry-customer .company {
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .inquiry-date {
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-new {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-in_progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-quoted {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .status-closed {
+            background: #f3f4f6;
+            color: #4b5563;
+        }
+
+        /* Detail Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 50px 20px;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 800px;
+            max-height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+        }
+
+        .modal-header h2 {
+            font-size: 18px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .detail-section {
+            margin-bottom: 25px;
+        }
+
+        .detail-section h3 {
+            font-size: 14px;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-item label {
+            font-size: 12px;
+            color: var(--text-light);
+            margin-bottom: 3px;
+        }
+
+        .detail-item span {
+            font-size: 15px;
+        }
+
+        .summary-box {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+        }
+
+        .conversation-box {
+            background: var(--bg);
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .conv-message {
+            margin-bottom: 12px;
+            padding: 10px 15px;
+            border-radius: 12px;
+        }
+
+        .conv-message.user {
+            background: var(--primary);
+            color: white;
+            margin-left: 30px;
+        }
+
+        .conv-message.assistant {
+            background: white;
+            margin-right: 30px;
+        }
+
+        .conv-message .role {
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            opacity: 0.7;
+        }
+
+        /* Status Update */
+        .status-update {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .status-update select {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .status-update button {
+            padding: 10px 20px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        /* Notes */
+        .notes-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            min-height: 100px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .save-notes {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-light);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* Loading */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-light);
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .table-header {
+                display: none;
+            }
+
+            .inquiry-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+
+            .inquiry-row > div:before {
+                content: attr(data-label);
+                font-size: 11px;
+                color: var(--text-light);
+                display: block;
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Login -->
+    <div id="login-view" class="login-container">
+        <h2>AKIM Admin Login</h2>
+        <form class="login-form" id="login-form">
+            <div class="form-group">
+                <label for="api-key">Admin API Key</label>
+                <input type="password" id="api-key" placeholder="API Key eingeben..." required>
+            </div>
+            <button type="submit">Anmelden</button>
+            <p class="login-error" id="login-error" style="display: none;"></p>
+        </form>
+    </div>
+
+    <!-- Admin View -->
+    <div id="admin-view" style="display: none;">
+        <header class="admin-header">
+            <h1>
+                <img src="images/logo_akim_neu2.png" alt="AKIM">
+                Chatbot Anfragen
+            </h1>
+            <nav class="admin-nav">
+                <button id="refresh-btn">↻ Aktualisieren</button>
+                <button id="logout-btn">Abmelden</button>
+            </nav>
+        </header>
+
+        <main class="admin-content active">
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-card new">
+                    <h3>Neue Anfragen</h3>
+                    <div class="value" id="stat-new">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>In Bearbeitung</h3>
+                    <div class="value" id="stat-progress">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Offerte erstellt</h3>
+                    <div class="value" id="stat-quoted">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>Gesamt</h3>
+                    <div class="value" id="stat-total">-</div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters-row">
+                <button class="filter-btn active" data-status="all">Alle</button>
+                <button class="filter-btn" data-status="new">Neu</button>
+                <button class="filter-btn" data-status="in_progress">In Bearbeitung</button>
+                <button class="filter-btn" data-status="quoted">Offerte erstellt</button>
+                <button class="filter-btn" data-status="closed">Abgeschlossen</button>
+            </div>
+
+            <!-- Inquiries List -->
+            <div class="inquiries-table">
+                <div class="table-header">
+                    <div>ID</div>
+                    <div>Kunde</div>
+                    <div>Zusammenfassung</div>
+                    <div>Datum</div>
+                    <div>Sprache</div>
+                    <div>Status</div>
+                </div>
+                <div id="inquiries-list">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        <p>Lade Anfragen...</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Detail Modal -->
+    <div class="modal-overlay" id="detail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Anfrage Details</h2>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <!-- Content loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State
+        let apiKey = localStorage.getItem('akim_admin_key') || '';
+        let inquiries = [];
+        let currentFilter = 'all';
+
+        // Elements
+        const loginView = document.getElementById('login-view');
+        const adminView = document.getElementById('admin-view');
+        const loginForm = document.getElementById('login-form');
+        const apiKeyInput = document.getElementById('api-key');
+        const loginError = document.getElementById('login-error');
+        const inquiriesList = document.getElementById('inquiries-list');
+        const detailModal = document.getElementById('detail-modal');
+        const modalBody = document.getElementById('modal-body');
+
+        // Check if already logged in
+        if (apiKey) {
+            showAdminView();
+            loadInquiries();
+        }
+
+        // Login form
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            apiKey = apiKeyInput.value.trim();
+
+            // Test API key
+            try {
+                const response = await fetch('/api/get-inquiries?limit=1', {
+                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                });
+
+                if (response.ok) {
+                    localStorage.setItem('akim_admin_key', apiKey);
+                    showAdminView();
+                    loadInquiries();
+                } else {
+                    showLoginError('Ungültiger API Key');
+                }
+            } catch (error) {
+                showLoginError('Verbindungsfehler');
+            }
+        });
+
+        // Logout
+        document.getElementById('logout-btn').addEventListener('click', () => {
+            localStorage.removeItem('akim_admin_key');
+            apiKey = '';
+            loginView.style.display = 'block';
+            adminView.style.display = 'none';
+        });
+
+        // Refresh
+        document.getElementById('refresh-btn').addEventListener('click', loadInquiries);
+
+        // Filters
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentFilter = btn.dataset.status;
+                renderInquiries();
+            });
+        });
+
+        // Modal close
+        document.getElementById('modal-close').addEventListener('click', closeModal);
+        detailModal.addEventListener('click', (e) => {
+            if (e.target === detailModal) closeModal();
+        });
+
+        function showAdminView() {
+            loginView.style.display = 'none';
+            adminView.style.display = 'block';
+        }
+
+        function showLoginError(message) {
+            loginError.textContent = message;
+            loginError.style.display = 'block';
+        }
+
+        async function loadInquiries() {
+            inquiriesList.innerHTML = '<div class="loading"><div class="spinner"></div><p>Lade Anfragen...</p></div>';
+
+            try {
+                const response = await fetch('/api/get-inquiries?limit=100', {
+                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to load');
+
+                const data = await response.json();
+                inquiries = data.inquiries || [];
+                updateStats();
+                renderInquiries();
+            } catch (error) {
+                console.error('Load error:', error);
+                inquiriesList.innerHTML = '<div class="empty-state"><p>Fehler beim Laden der Anfragen</p></div>';
+            }
+        }
+
+        function updateStats() {
+            const stats = {
+                new: inquiries.filter(i => i.status === 'new').length,
+                in_progress: inquiries.filter(i => i.status === 'in_progress').length,
+                quoted: inquiries.filter(i => i.status === 'quoted').length,
+                total: inquiries.length
+            };
+
+            document.getElementById('stat-new').textContent = stats.new;
+            document.getElementById('stat-progress').textContent = stats.in_progress;
+            document.getElementById('stat-quoted').textContent = stats.quoted;
+            document.getElementById('stat-total').textContent = stats.total;
+        }
+
+        function renderInquiries() {
+            const filtered = currentFilter === 'all'
+                ? inquiries
+                : inquiries.filter(i => i.status === currentFilter);
+
+            if (filtered.length === 0) {
+                inquiriesList.innerHTML = '<div class="empty-state"><p>Keine Anfragen gefunden</p></div>';
+                return;
+            }
+
+            inquiriesList.innerHTML = filtered.map(inquiry => `
+                <div class="inquiry-row" onclick="openDetail(${inquiry.id})">
+                    <div class="inquiry-id" data-label="ID">#${inquiry.id}</div>
+                    <div class="inquiry-customer" data-label="Kunde">
+                        <span class="name">${inquiry.customer_name || 'Unbekannt'}</span>
+                        <span class="company">${inquiry.customer_company || '-'}</span>
+                    </div>
+                    <div data-label="Zusammenfassung">${truncate(inquiry.summary || '-', 60)}</div>
+                    <div class="inquiry-date" data-label="Datum">${formatDate(inquiry.created_at)}</div>
+                    <div data-label="Sprache">${(inquiry.language || 'de').toUpperCase()}</div>
+                    <div data-label="Status"><span class="status-badge status-${inquiry.status}">${getStatusLabel(inquiry.status)}</span></div>
+                </div>
+            `).join('');
+        }
+
+        async function openDetail(id) {
+            detailModal.classList.add('active');
+            modalBody.innerHTML = '<div class="loading"><div class="spinner"></div></div>';
+
+            try {
+                const response = await fetch(`/api/get-inquiries?id=${id}`, {
+                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to load');
+
+                const data = await response.json();
+                const inquiry = data.inquiries[0];
+
+                if (!inquiry) {
+                    modalBody.innerHTML = '<p>Anfrage nicht gefunden</p>';
+                    return;
+                }
+
+                const messages = inquiry.messages || [];
+
+                modalBody.innerHTML = `
+                    <div class="detail-section">
+                        <h3>Kundendaten</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Name</label>
+                                <span>${inquiry.customer_name || '-'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>E-Mail</label>
+                                <span><a href="mailto:${inquiry.customer_email}">${inquiry.customer_email || '-'}</a></span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Telefon</label>
+                                <span>${inquiry.customer_phone || '-'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Firma</label>
+                                <span>${inquiry.customer_company || '-'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Land</label>
+                                <span>${inquiry.customer_country || '-'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Sprache</label>
+                                <span>${(inquiry.language || 'de').toUpperCase()}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Zusammenfassung</h3>
+                        <div class="summary-box">${inquiry.summary || 'Keine Zusammenfassung verfügbar'}</div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Konversation</h3>
+                        <div class="conversation-box">
+                            ${messages.map(m => `
+                                <div class="conv-message ${m.role}">
+                                    <div class="role">${m.role === 'user' ? 'Kunde' : 'Alex'}</div>
+                                    <div>${escapeHtml(m.content)}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Status aktualisieren</h3>
+                        <div class="status-update">
+                            <select id="status-select">
+                                <option value="new" ${inquiry.status === 'new' ? 'selected' : ''}>Neu</option>
+                                <option value="in_progress" ${inquiry.status === 'in_progress' ? 'selected' : ''}>In Bearbeitung</option>
+                                <option value="quoted" ${inquiry.status === 'quoted' ? 'selected' : ''}>Offerte erstellt</option>
+                                <option value="closed" ${inquiry.status === 'closed' ? 'selected' : ''}>Abgeschlossen</option>
+                            </select>
+                            <button onclick="updateStatus(${inquiry.id})">Speichern</button>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h3>Interne Notizen</h3>
+                        <textarea class="notes-textarea" id="notes-textarea">${inquiry.notes || ''}</textarea>
+                        <button class="save-notes" onclick="saveNotes(${inquiry.id})">Notizen speichern</button>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Detail error:', error);
+                modalBody.innerHTML = '<p>Fehler beim Laden der Details</p>';
+            }
+        }
+
+        function closeModal() {
+            detailModal.classList.remove('active');
+        }
+
+        async function updateStatus(id) {
+            const status = document.getElementById('status-select').value;
+
+            try {
+                const response = await fetch('/api/update-inquiry', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({ id, status })
+                });
+
+                if (response.ok) {
+                    loadInquiries();
+                    alert('Status aktualisiert');
+                }
+            } catch (error) {
+                console.error('Update error:', error);
+            }
+        }
+
+        async function saveNotes(id) {
+            const notes = document.getElementById('notes-textarea').value;
+
+            try {
+                const response = await fetch('/api/update-inquiry', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${apiKey}`
+                    },
+                    body: JSON.stringify({ id, notes })
+                });
+
+                if (response.ok) {
+                    alert('Notizen gespeichert');
+                }
+            } catch (error) {
+                console.error('Save error:', error);
+            }
+        }
+
+        // Helpers
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('de-CH', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function getStatusLabel(status) {
+            const labels = {
+                new: 'Neu',
+                in_progress: 'In Bearbeitung',
+                quoted: 'Offerte erstellt',
+                closed: 'Abgeschlossen'
+            };
+            return labels[status] || status;
+        }
+
+        function truncate(str, len) {
+            if (!str) return '-';
+            return str.length > len ? str.substring(0, len) + '...' : str;
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Check for ID in URL (from email link)
+        const urlParams = new URLSearchParams(window.location.search);
+        const inquiryId = urlParams.get('id');
+        if (inquiryId && apiKey) {
+            setTimeout(() => openDetail(parseInt(inquiryId)), 500);
+        }
+    </script>
+</body>
+</html>
