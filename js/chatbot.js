@@ -11,7 +11,8 @@
     apiEndpoint: '/api/chat',
     sendEndpoint: '/api/send-inquiry',
     maxMessages: 50,
-    typingDelay: 500
+    typingDelay: 500,
+    requireLeadForm: true  // Chatbot erst nach Formular öffnen
   };
 
   // Zustand
@@ -21,7 +22,8 @@
     messages: [],
     sessionId: null,
     language: 'de',
-    collectedData: {}
+    collectedData: {},
+    leadData: null  // Daten aus dem Lead-Formular
   };
 
   // Übersetzungen
@@ -457,6 +459,40 @@
     return ['de', 'en', 'fr', 'it'].includes(lang) ? lang : 'de';
   }
 
+  // Chatbot öffnen mit Lead-Daten
+  function openWithLead(leadData) {
+    state.leadData = leadData;
+
+    // Sprache basierend auf Land setzen
+    const countryLangMap = {
+      'CH': 'de', 'DE': 'de', 'AT': 'de',
+      'FR': 'fr', 'BE': 'fr',
+      'IT': 'it',
+      'UK': 'en', 'US': 'en', 'OTHER': 'en'
+    };
+    state.language = countryLangMap[leadData.country] || 'de';
+
+    const widget = document.getElementById('akim-chatbot');
+    if (widget) {
+      widget.querySelector('.akim-lang-select').value = state.language;
+      updateUILanguage();
+    }
+
+    // Chat öffnen
+    toggleChat(true);
+
+    // Personalisierte Begrüssung
+    if (state.messages.length === 0) {
+      const greetings = {
+        de: `Guten Tag${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! Ich bin der virtuelle Berater von AKIM AG. Ich sehe, Sie kommen von ${leadData.company || 'Ihrer Firma'}. Wie kann ich Ihnen bei der Auswahl des passenden Getriebes helfen? Was möchten Sie antreiben?`,
+        en: `Hello${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! I'm the virtual advisor from AKIM AG. I see you're from ${leadData.company || 'your company'}. How can I help you select the right gearbox? What do you want to drive?`,
+        fr: `Bonjour${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! Je suis le conseiller virtuel d'AKIM AG. Je vois que vous venez de ${leadData.company || 'votre entreprise'}. Comment puis-je vous aider à choisir le bon réducteur? Qu'est-ce que vous souhaitez entraîner?`,
+        it: `Buongiorno${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! Sono il consulente virtuale di AKIM AG. Vedo che viene da ${leadData.company || 'la sua azienda'}. Come posso aiutarla a scegliere il riduttore giusto? Cosa desidera azionare?`
+      };
+      addMessage(greetings[state.language] || greetings.de, 'assistant');
+    }
+  }
+
   // Initialisierung
   function init() {
     // Sprache setzen
@@ -470,6 +506,26 @@
 
     // Events einrichten
     setupEventListeners(widget);
+
+    // Chat-Button verstecken wenn Lead-Formular benötigt
+    if (CONFIG.requireLeadForm) {
+      const chatButton = widget.querySelector('.akim-chat-button');
+      if (chatButton) {
+        chatButton.style.display = 'none';
+      }
+    }
+
+    // Event Listener für Lead-Formular
+    window.addEventListener('akim-open-chat', function(e) {
+      openWithLead(e.detail);
+    });
+
+    // Globale API exponieren
+    window.akimChatbot = {
+      open: function() { toggleChat(true); },
+      close: function() { toggleChat(false); },
+      openWithLead: openWithLead
+    };
 
     console.log('AKIM Chatbot initialized');
   }
