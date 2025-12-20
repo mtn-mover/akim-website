@@ -498,32 +498,27 @@
   /* Messages-Bereich */
   .akim-chat-messages {
     grid-row: 2;
-    display: block !important;
+    display: flex !important;
+    flex-direction: column;
+    justify-content: flex-end; /* Nachrichten unten starten */
     padding: 12px;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-  }
-
-  /* Clearfix für floats */
-  .akim-chat-messages::after {
-    content: "";
-    display: table;
-    clear: both;
+    gap: 10px;
   }
 
   .akim-chat-message {
     display: block;
     max-width: 85%;
-    margin-bottom: 10px;
-    clear: both;
+    flex-shrink: 0;
   }
 
   .akim-chat-message-user {
-    float: right;
+    align-self: flex-end;
   }
 
   .akim-chat-message-assistant {
-    float: left;
+    align-self: flex-start;
   }
 
   .akim-chat-message-content {
@@ -615,14 +610,14 @@
 
   /* Typing Indicator */
   .akim-chat-typing {
-    float: left;
-    clear: both;
+    align-self: flex-start;
+    flex-shrink: 0;
   }
 
-  /* Completion Prompt muss auch floaten */
+  /* Completion Prompt */
   .akim-chat-completion {
-    float: left;
-    clear: both;
+    align-self: stretch;
+    flex-shrink: 0;
     width: 100%;
   }
 }
