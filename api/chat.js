@@ -96,7 +96,7 @@ module.exports = async function handler(req, res) {
 
     // Prüfen ob die Konversation abgeschlossen werden soll
     // (Wenn alle Pflichtdaten gesammelt wurden)
-    const isComplete = checkIfInquiryComplete(messages, assistantMessage);
+    const isComplete = checkIfInquiryComplete(messages, assistantMessage, leadData);
 
     res.status(200).json({
       message: assistantMessage,
@@ -112,17 +112,18 @@ module.exports = async function handler(req, res) {
 };
 
 // Prüft ob die Anfrage alle Pflichtdaten enthält
-function checkIfInquiryComplete(messages, lastResponse) {
+function checkIfInquiryComplete(messages, lastResponse, leadData) {
   const allText = messages.map(m => m.content).join(' ').toLowerCase() + ' ' + lastResponse.toLowerCase();
 
-  // Suche nach E-Mail Pattern
-  const hasEmail = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(allText);
+  // E-Mail: entweder aus Lead-Daten oder aus Chat
+  const hasEmail = (leadData && leadData.email) || /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/.test(allText);
 
-  // Suche nach technischen Daten (Nm, min-1, Übersetzung)
-  const hasTechnicalData = /\d+\s*(nm|min|:1|drehmoment|torque|übersetzung|ratio)/i.test(allText);
+  // Suche nach technischen Daten (Nm, min-1, Übersetzung, rpm)
+  const hasTechnicalData = /\d+\s*(nm|min|rpm|:1|drehmoment|torque|übersetzung|ratio)/i.test(allText);
 
   // Suche nach Abschluss-Indikatoren in der letzten Antwort
-  const hasCompletionIndicator = /(zusammenfassung|summary|anfrage absenden|send inquiry|offerte|quote)/i.test(lastResponse);
+  // Erweitert um mehr Schlüsselwörter die Alex verwendet
+  const hasCompletionIndicator = /(zusammenfassung|summary|anfrage absenden|send inquiry|offerte|quote|weiterleiten|spezialisten|anfrage so an|shall i forward|should i send)/i.test(lastResponse);
 
   return hasEmail && hasTechnicalData && hasCompletionIndicator;
 }
