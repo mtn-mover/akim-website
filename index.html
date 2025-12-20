@@ -224,10 +224,18 @@
                 }
             });
 
-            // Smooth scroll für CTA
+            // Smooth scroll für CTA mit Offset
             document.querySelector('.cta-button').addEventListener('click', function(e) {
                 e.preventDefault();
-                document.getElementById('contact-form').scrollIntoView({ behavior: 'smooth' });
+                var contactSection = document.getElementById('contact-form');
+                var offset = 20; // Etwas Abstand oben
+                var elementPosition = contactSection.getBoundingClientRect().top;
+                var offsetPosition = elementPosition + window.pageYOffset - offset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: 'smooth'
+                });
             });
         });
     </script>
