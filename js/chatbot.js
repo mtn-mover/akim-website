@@ -285,7 +285,9 @@
             role: m.role,
             content: m.content
           })),
-          sessionId: state.sessionId
+          sessionId: state.sessionId,
+          leadData: state.leadData,
+          language: state.language
         })
       });
 
