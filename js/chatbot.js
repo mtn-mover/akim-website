@@ -210,8 +210,9 @@
       chatButton.style.display = 'none';
       badge.style.display = 'none';
 
-      // Begrüssung beim ersten Öffnen
-      if (state.messages.length === 0) {
+      // Begrüssung beim ersten Öffnen - NUR wenn keine Lead-Daten vorhanden
+      // (bei Lead-Daten wird die personalisierte Begrüssung in openWithLead hinzugefügt)
+      if (state.messages.length === 0 && !state.leadData) {
         addMessage(t('greeting'), 'assistant');
       }
 
