@@ -205,6 +205,8 @@
   padding: 15px;
   display: flex;
   flex-direction: column;
+  align-items: flex-start; /* Nachrichten links ausrichten */
+  justify-content: flex-start; /* Nachrichten oben starten */
   gap: 12px;
   scroll-behavior: smooth;
 }
@@ -489,17 +491,31 @@
 
   /* Messages-Bereich: Nachrichten am Anfang, nicht zentriert */
   .akim-chat-messages {
-    flex: 1;
+    flex: 1 1 auto;
     min-height: 0; /* Wichtig für Flexbox-Scrolling */
     padding: 12px;
     gap: 8px;
-    justify-content: flex-start; /* Nachrichten oben starten */
+    display: block; /* Block statt Flex - verhindert die grosse Lücke */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch; /* Smooth scrolling auf iOS */
   }
 
   .akim-chat-message {
+    display: block;
+    margin-bottom: 8px;
     max-width: 90%; /* Mehr Platz für Text auf Mobile */
+  }
+
+  .akim-chat-message:last-child {
+    margin-bottom: 0;
+  }
+
+  .akim-chat-message-user {
+    margin-left: auto; /* User-Nachrichten rechts */
+  }
+
+  .akim-chat-message-assistant {
+    margin-right: auto; /* Bot-Nachrichten links */
   }
 
   .akim-chat-message-content {
