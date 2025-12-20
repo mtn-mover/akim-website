@@ -25,9 +25,17 @@
   font-size: 15px;
   line-height: 1.5;
   position: fixed;
-  bottom: 20px;
-  right: 20px;
+  inset: 0;
   z-index: 99999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+#akim-chatbot.akim-chat-open {
+  background: rgba(0, 0, 0, 0.5);
+  pointer-events: auto;
 }
 
 /* Chat Button */
@@ -75,16 +83,18 @@
 
 /* Chat Window */
 .akim-chat-window {
-  width: 380px;
-  height: 550px;
-  max-height: calc(100vh - 100px);
+  width: 450px;
+  height: 600px;
+  max-height: calc(100vh - 40px);
+  max-width: calc(100vw - 40px);
   background: var(--akim-chat-bg);
-  border-radius: var(--akim-chat-radius);
-  box-shadow: var(--akim-chat-shadow);
+  border-radius: 16px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: akimSlideUp 0.3s ease;
+  animation: akimFadeIn 0.3s ease;
+  pointer-events: auto;
 }
 
 @keyframes akimSlideUp {
@@ -143,17 +153,24 @@
 }
 
 .akim-lang-select {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
   color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.akim-lang-select:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 
 .akim-lang-select option {
   color: var(--akim-chat-text);
+  background: white;
 }
 
 .akim-chat-minimize,

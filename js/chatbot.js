@@ -29,13 +29,13 @@
   // Übersetzungen
   const i18n = {
     de: {
-      title: 'AKIM Getriebe-Berater',
-      subtitle: 'Wie kann ich Ihnen helfen?',
+      title: 'Alex - AKIM Berater',
+      subtitle: 'Ihr persönlicher Getriebe-Experte',
       placeholder: 'Ihre Nachricht...',
       send: 'Senden',
       close: 'Schliessen',
       minimize: 'Minimieren',
-      greeting: 'Guten Tag! Ich bin der virtuelle Berater von AKIM AG. Ich helfe Ihnen gerne bei der Auswahl des passenden Getriebes. Was möchten Sie antreiben?',
+      greeting: 'Hallo! Ich bin Alex, Ihr persönlicher Berater bei AKIM. Ich helfe Ihnen gerne, das passende Präzisionsgetriebe für Ihre Anwendung zu finden. Was möchten Sie antreiben?',
       error: 'Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.',
       sending: 'Wird gesendet...',
       sent: 'Anfrage gesendet!',
@@ -44,13 +44,13 @@
       no: 'Nein, weiter bearbeiten'
     },
     en: {
-      title: 'AKIM Gearbox Advisor',
-      subtitle: 'How can I help you?',
+      title: 'Alex - AKIM Advisor',
+      subtitle: 'Your personal gearbox expert',
       placeholder: 'Your message...',
       send: 'Send',
       close: 'Close',
       minimize: 'Minimize',
-      greeting: 'Hello! I am the virtual advisor from AKIM AG. I will be happy to help you select the right gearbox. What do you want to drive?',
+      greeting: 'Hello! I\'m Alex, your personal advisor at AKIM. I\'m happy to help you find the right precision gearbox for your application. What do you want to drive?',
       error: 'Sorry, there was an error. Please try again.',
       sending: 'Sending...',
       sent: 'Inquiry sent!',
@@ -59,13 +59,13 @@
       no: 'No, continue editing'
     },
     fr: {
-      title: 'Conseiller AKIM',
-      subtitle: 'Comment puis-je vous aider?',
+      title: 'Alex - Conseiller AKIM',
+      subtitle: 'Votre expert en réducteurs',
       placeholder: 'Votre message...',
       send: 'Envoyer',
       close: 'Fermer',
       minimize: 'Minimiser',
-      greeting: 'Bonjour! Je suis le conseiller virtuel d\'AKIM AG. Je serai heureux de vous aider à choisir le bon réducteur. Qu\'est-ce que vous souhaitez entraîner?',
+      greeting: 'Bonjour! Je suis Alex, votre conseiller personnel chez AKIM. Je serai heureux de vous aider à choisir le bon réducteur. Qu\'est-ce que vous souhaitez entraîner?',
       error: 'Désolé, une erreur s\'est produite. Veuillez réessayer.',
       sending: 'Envoi en cours...',
       sent: 'Demande envoyée!',
@@ -74,13 +74,13 @@
       no: 'Non, continuer'
     },
     it: {
-      title: 'Consulente AKIM',
-      subtitle: 'Come posso aiutarla?',
+      title: 'Alex - Consulente AKIM',
+      subtitle: 'Il suo esperto di riduttori',
       placeholder: 'Il suo messaggio...',
       send: 'Invia',
       close: 'Chiudi',
       minimize: 'Minimizza',
-      greeting: 'Buongiorno! Sono il consulente virtuale di AKIM AG. Sarò lieto di aiutarla a scegliere il riduttore giusto. Cosa desidera azionare?',
+      greeting: 'Buongiorno! Sono Alex, il suo consulente personale presso AKIM. Sarò lieto di aiutarla a scegliere il riduttore giusto. Cosa desidera azionare?',
       error: 'Mi dispiace, si è verificato un errore. Per favore riprovi.',
       sending: 'Invio in corso...',
       sent: 'Richiesta inviata!',
@@ -205,6 +205,7 @@
     state.isOpen = open;
 
     if (open) {
+      widget.classList.add('akim-chat-open');
       chatWindow.style.display = 'flex';
       chatButton.style.display = 'none';
       badge.style.display = 'none';
@@ -219,8 +220,12 @@
         widget.querySelector('.akim-chat-input').focus();
       }, 100);
     } else {
+      widget.classList.remove('akim-chat-open');
       chatWindow.style.display = 'none';
-      chatButton.style.display = 'flex';
+      // Button nur anzeigen wenn kein Lead-Formular benötigt
+      if (!CONFIG.requireLeadForm) {
+        chatButton.style.display = 'flex';
+      }
     }
   }
 
@@ -484,10 +489,10 @@
     // Personalisierte Begrüssung
     if (state.messages.length === 0) {
       const greetings = {
-        de: `Guten Tag${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! Ich bin der virtuelle Berater von AKIM AG. Ich sehe, Sie kommen von ${leadData.company || 'Ihrer Firma'}. Wie kann ich Ihnen bei der Auswahl des passenden Getriebes helfen? Was möchten Sie antreiben?`,
-        en: `Hello${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! I'm the virtual advisor from AKIM AG. I see you're from ${leadData.company || 'your company'}. How can I help you select the right gearbox? What do you want to drive?`,
-        fr: `Bonjour${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! Je suis le conseiller virtuel d'AKIM AG. Je vois que vous venez de ${leadData.company || 'votre entreprise'}. Comment puis-je vous aider à choisir le bon réducteur? Qu'est-ce que vous souhaitez entraîner?`,
-        it: `Buongiorno${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! Sono il consulente virtuale di AKIM AG. Vedo che viene da ${leadData.company || 'la sua azienda'}. Come posso aiutarla a scegliere il riduttore giusto? Cosa desidera azionare?`
+        de: `Guten Tag${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! Ich bin Alex, Ihr persönlicher Berater bei AKIM.${leadData.company ? ' Ich sehe, Sie kommen von ' + leadData.company + '.' : ''} Wie kann ich Ihnen bei der Auswahl des passenden Getriebes helfen? Was möchten Sie antreiben?`,
+        en: `Hello${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! I'm Alex, your personal advisor at AKIM.${leadData.company ? ' I see you\'re from ' + leadData.company + '.' : ''} How can I help you select the right gearbox? What do you want to drive?`,
+        fr: `Bonjour${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! Je suis Alex, votre conseiller personnel chez AKIM.${leadData.company ? ' Je vois que vous venez de ' + leadData.company + '.' : ''} Comment puis-je vous aider à choisir le bon réducteur? Qu'est-ce que vous souhaitez entraîner?`,
+        it: `Buongiorno${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! Sono Alex, il suo consulente personale presso AKIM.${leadData.company ? ' Vedo che viene da ' + leadData.company + '.' : ''} Come posso aiutarla a scegliere il riduttore giusto? Cosa desidera azionare?`
       };
       addMessage(greetings[state.language] || greetings.de, 'assistant');
     }
