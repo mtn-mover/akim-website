@@ -372,7 +372,13 @@
       </div>
     `;
 
-    promptEl.querySelector('[data-action="send"]').addEventListener('click', submitInquiry);
+    const sendBtn = promptEl.querySelector('[data-action="send"]');
+    sendBtn.addEventListener('click', () => {
+      // Button deaktivieren um Mehrfachklicks zu verhindern
+      sendBtn.disabled = true;
+      sendBtn.innerHTML = '<span class="akim-spinner"></span> ' + t('sending');
+      submitInquiry();
+    });
     promptEl.querySelector('[data-action="continue"]').addEventListener('click', () => {
       promptEl.remove();
     });
