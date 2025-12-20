@@ -1,0 +1,484 @@
+/**
+ * AKIM Chatbot Widget
+ * Intelligenter Verkaufsassistent für Getriebe-Anfragen
+ */
+
+(function() {
+  'use strict';
+
+  // Konfiguration
+  const CONFIG = {
+    apiEndpoint: '/api/chat',
+    sendEndpoint: '/api/send-inquiry',
+    maxMessages: 50,
+    typingDelay: 500
+  };
+
+  // Zustand
+  let state = {
+    isOpen: false,
+    isLoading: false,
+    messages: [],
+    sessionId: null,
+    language: 'de',
+    collectedData: {}
+  };
+
+  // Übersetzungen
+  const i18n = {
+    de: {
+      title: 'AKIM Getriebe-Berater',
+      subtitle: 'Wie kann ich Ihnen helfen?',
+      placeholder: 'Ihre Nachricht...',
+      send: 'Senden',
+      close: 'Schliessen',
+      minimize: 'Minimieren',
+      greeting: 'Guten Tag! Ich bin der virtuelle Berater von AKIM AG. Ich helfe Ihnen gerne bei der Auswahl des passenden Getriebes. Was möchten Sie antreiben?',
+      error: 'Entschuldigung, es gab einen Fehler. Bitte versuchen Sie es erneut.',
+      sending: 'Wird gesendet...',
+      sent: 'Anfrage gesendet!',
+      confirmSend: 'Möchten Sie die Anfrage absenden?',
+      yes: 'Ja, absenden',
+      no: 'Nein, weiter bearbeiten'
+    },
+    en: {
+      title: 'AKIM Gearbox Advisor',
+      subtitle: 'How can I help you?',
+      placeholder: 'Your message...',
+      send: 'Send',
+      close: 'Close',
+      minimize: 'Minimize',
+      greeting: 'Hello! I am the virtual advisor from AKIM AG. I will be happy to help you select the right gearbox. What do you want to drive?',
+      error: 'Sorry, there was an error. Please try again.',
+      sending: 'Sending...',
+      sent: 'Inquiry sent!',
+      confirmSend: 'Would you like to send the inquiry?',
+      yes: 'Yes, send',
+      no: 'No, continue editing'
+    },
+    fr: {
+      title: 'Conseiller AKIM',
+      subtitle: 'Comment puis-je vous aider?',
+      placeholder: 'Votre message...',
+      send: 'Envoyer',
+      close: 'Fermer',
+      minimize: 'Minimiser',
+      greeting: 'Bonjour! Je suis le conseiller virtuel d\'AKIM AG. Je serai heureux de vous aider à choisir le bon réducteur. Qu\'est-ce que vous souhaitez entraîner?',
+      error: 'Désolé, une erreur s\'est produite. Veuillez réessayer.',
+      sending: 'Envoi en cours...',
+      sent: 'Demande envoyée!',
+      confirmSend: 'Voulez-vous envoyer la demande?',
+      yes: 'Oui, envoyer',
+      no: 'Non, continuer'
+    },
+    it: {
+      title: 'Consulente AKIM',
+      subtitle: 'Come posso aiutarla?',
+      placeholder: 'Il suo messaggio...',
+      send: 'Invia',
+      close: 'Chiudi',
+      minimize: 'Minimizza',
+      greeting: 'Buongiorno! Sono il consulente virtuale di AKIM AG. Sarò lieto di aiutarla a scegliere il riduttore giusto. Cosa desidera azionare?',
+      error: 'Mi dispiace, si è verificato un errore. Per favore riprovi.',
+      sending: 'Invio in corso...',
+      sent: 'Richiesta inviata!',
+      confirmSend: 'Vuole inviare la richiesta?',
+      yes: 'Sì, invia',
+      no: 'No, continua'
+    }
+  };
+
+  // Text abrufen
+  function t(key) {
+    return i18n[state.language]?.[key] || i18n.de[key] || key;
+  }
+
+  // Widget HTML erstellen
+  function createWidget() {
+    const widget = document.createElement('div');
+    widget.id = 'akim-chatbot';
+    widget.innerHTML = `
+      <button class="akim-chat-button" aria-label="Chat öffnen">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l4.93-1.36C8.42 21.5 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm-1 14h2v2h-2v-2zm0-8h2v6h-2V8z"/>
+        </svg>
+        <span class="akim-chat-badge" style="display: none;">1</span>
+      </button>
+
+      <div class="akim-chat-window" style="display: none;">
+        <div class="akim-chat-header">
+          <div class="akim-chat-header-info">
+            <img src="assets/images/Akim_Signet_2014_email.jpg" alt="AKIM" class="akim-chat-logo">
+            <div>
+              <h3>${t('title')}</h3>
+              <p>${t('subtitle')}</p>
+            </div>
+          </div>
+          <div class="akim-chat-header-actions">
+            <select class="akim-lang-select" aria-label="Sprache wählen">
+              <option value="de">DE</option>
+              <option value="en">EN</option>
+              <option value="fr">FR</option>
+              <option value="it">IT</option>
+            </select>
+            <button class="akim-chat-minimize" aria-label="${t('minimize')}">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 13H5v-2h14v2z"/></svg>
+            </button>
+            <button class="akim-chat-close" aria-label="${t('close')}">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="akim-chat-messages" role="log" aria-live="polite">
+          <!-- Nachrichten werden hier eingefügt -->
+        </div>
+
+        <div class="akim-chat-input-area">
+          <form class="akim-chat-form">
+            <input type="text"
+                   class="akim-chat-input"
+                   placeholder="${t('placeholder')}"
+                   aria-label="${t('placeholder')}"
+                   autocomplete="off">
+            <button type="submit" class="akim-chat-send" aria-label="${t('send')}">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(widget);
+    return widget;
+  }
+
+  // Event Listeners einrichten
+  function setupEventListeners(widget) {
+    const chatButton = widget.querySelector('.akim-chat-button');
+    const chatWindow = widget.querySelector('.akim-chat-window');
+    const closeBtn = widget.querySelector('.akim-chat-close');
+    const minimizeBtn = widget.querySelector('.akim-chat-minimize');
+    const form = widget.querySelector('.akim-chat-form');
+    const input = widget.querySelector('.akim-chat-input');
+    const langSelect = widget.querySelector('.akim-lang-select');
+
+    // Chat öffnen/schliessen
+    chatButton.addEventListener('click', () => toggleChat(true));
+    closeBtn.addEventListener('click', () => toggleChat(false));
+    minimizeBtn.addEventListener('click', () => toggleChat(false));
+
+    // Nachricht senden
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const message = input.value.trim();
+      if (message && !state.isLoading) {
+        sendMessage(message);
+        input.value = '';
+      }
+    });
+
+    // Sprache wechseln
+    langSelect.addEventListener('change', (e) => {
+      state.language = e.target.value;
+      updateUILanguage();
+    });
+
+    // Enter zum Senden
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        form.dispatchEvent(new Event('submit'));
+      }
+    });
+  }
+
+  // Chat ein-/ausblenden
+  function toggleChat(open) {
+    const widget = document.getElementById('akim-chatbot');
+    const chatWindow = widget.querySelector('.akim-chat-window');
+    const chatButton = widget.querySelector('.akim-chat-button');
+    const badge = widget.querySelector('.akim-chat-badge');
+
+    state.isOpen = open;
+
+    if (open) {
+      chatWindow.style.display = 'flex';
+      chatButton.style.display = 'none';
+      badge.style.display = 'none';
+
+      // Begrüssung beim ersten Öffnen
+      if (state.messages.length === 0) {
+        addMessage(t('greeting'), 'assistant');
+      }
+
+      // Fokus auf Input
+      setTimeout(() => {
+        widget.querySelector('.akim-chat-input').focus();
+      }, 100);
+    } else {
+      chatWindow.style.display = 'none';
+      chatButton.style.display = 'flex';
+    }
+  }
+
+  // Nachricht hinzufügen
+  function addMessage(content, role) {
+    const message = { role, content, timestamp: new Date() };
+    state.messages.push(message);
+
+    const messagesContainer = document.querySelector('.akim-chat-messages');
+    const messageEl = document.createElement('div');
+    messageEl.className = `akim-chat-message akim-chat-message-${role}`;
+    messageEl.innerHTML = `
+      <div class="akim-chat-message-content">${escapeHtml(content)}</div>
+      <div class="akim-chat-message-time">${formatTime(message.timestamp)}</div>
+    `;
+    messagesContainer.appendChild(messageEl);
+
+    // Scrollen
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Typing-Indikator anzeigen
+  function showTyping() {
+    const messagesContainer = document.querySelector('.akim-chat-messages');
+    const typingEl = document.createElement('div');
+    typingEl.className = 'akim-chat-typing';
+    typingEl.id = 'akim-typing';
+    typingEl.innerHTML = `
+      <div class="akim-typing-dots">
+        <span></span><span></span><span></span>
+      </div>
+    `;
+    messagesContainer.appendChild(typingEl);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Typing-Indikator entfernen
+  function hideTyping() {
+    const typingEl = document.getElementById('akim-typing');
+    if (typingEl) typingEl.remove();
+  }
+
+  // Nachricht an API senden
+  async function sendMessage(content) {
+    // Benutzer-Nachricht anzeigen
+    addMessage(content, 'user');
+
+    state.isLoading = true;
+    showTyping();
+
+    try {
+      const response = await fetch(CONFIG.apiEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          messages: state.messages.map(m => ({
+            role: m.role,
+            content: m.content
+          })),
+          sessionId: state.sessionId
+        })
+      });
+
+      if (!response.ok) throw new Error('API error');
+
+      const data = await response.json();
+
+      hideTyping();
+
+      // Sprache aktualisieren wenn erkannt
+      if (data.language && data.language !== state.language) {
+        state.language = data.language;
+        document.querySelector('.akim-lang-select').value = data.language;
+        updateUILanguage();
+      }
+
+      // Session ID speichern
+      if (data.sessionId) {
+        state.sessionId = data.sessionId;
+      }
+
+      // Antwort anzeigen
+      addMessage(data.message, 'assistant');
+
+      // Prüfen ob Anfrage komplett
+      if (data.isComplete) {
+        showCompletionPrompt();
+      }
+
+    } catch (error) {
+      console.error('Chat error:', error);
+      hideTyping();
+      addMessage(t('error'), 'assistant');
+    } finally {
+      state.isLoading = false;
+    }
+  }
+
+  // Abschluss-Dialog anzeigen
+  function showCompletionPrompt() {
+    const messagesContainer = document.querySelector('.akim-chat-messages');
+    const promptEl = document.createElement('div');
+    promptEl.className = 'akim-chat-completion';
+    promptEl.innerHTML = `
+      <p>${t('confirmSend')}</p>
+      <div class="akim-chat-completion-buttons">
+        <button class="akim-btn-primary" data-action="send">${t('yes')}</button>
+        <button class="akim-btn-secondary" data-action="continue">${t('no')}</button>
+      </div>
+    `;
+
+    promptEl.querySelector('[data-action="send"]').addEventListener('click', submitInquiry);
+    promptEl.querySelector('[data-action="continue"]').addEventListener('click', () => {
+      promptEl.remove();
+    });
+
+    messagesContainer.appendChild(promptEl);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+  }
+
+  // Anfrage absenden
+  async function submitInquiry() {
+    const completionEl = document.querySelector('.akim-chat-completion');
+    if (completionEl) {
+      completionEl.innerHTML = `<p>${t('sending')}</p>`;
+    }
+
+    try {
+      // Daten aus Konversation extrahieren
+      const inquiry = extractInquiryData();
+
+      const response = await fetch(CONFIG.sendEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          inquiry,
+          conversation: state.messages,
+          language: state.language
+        })
+      });
+
+      if (!response.ok) throw new Error('Send error');
+
+      if (completionEl) {
+        completionEl.innerHTML = `<p class="akim-success">${t('sent')}</p>`;
+      }
+
+      // Erfolgsmeldung vom Bot
+      setTimeout(() => {
+        if (completionEl) completionEl.remove();
+        const successMessages = {
+          de: 'Vielen Dank! Ihre Anfrage wurde an unser Verkaufsteam gesendet. Sie erhalten innerhalb von 48 Stunden eine Offerte per E-Mail.',
+          en: 'Thank you! Your inquiry has been sent to our sales team. You will receive a quote by email within 48 hours.',
+          fr: 'Merci! Votre demande a été envoyée à notre équipe commerciale. Vous recevrez un devis par email dans les 48 heures.',
+          it: 'Grazie! La sua richiesta è stata inviata al nostro team di vendita. Riceverà un preventivo via email entro 48 ore.'
+        };
+        addMessage(successMessages[state.language] || successMessages.de, 'assistant');
+      }, 1500);
+
+    } catch (error) {
+      console.error('Submit error:', error);
+      if (completionEl) {
+        completionEl.innerHTML = `<p class="akim-error">${t('error')}</p>`;
+      }
+    }
+  }
+
+  // Anfragedaten aus Konversation extrahieren
+  function extractInquiryData() {
+    const allText = state.messages.map(m => m.content).join('\n');
+
+    // E-Mail extrahieren
+    const emailMatch = allText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
+
+    // Firma extrahieren (verschiedene Patterns)
+    const companyMatch = allText.match(/(?:firma|company|société|azienda)[:\s]+([^\n,]+)/i);
+
+    // Name extrahieren
+    const nameMatch = allText.match(/(?:name|nom|nome)[:\s]+([^\n,]+)/i);
+
+    // Telefon extrahieren
+    const phoneMatch = allText.match(/(?:\+\d{1,3}[\s-]?)?\(?\d{2,4}\)?[\s.-]?\d{3,4}[\s.-]?\d{2,4}[\s.-]?\d{0,4}/);
+
+    // Technische Daten
+    const torqueMatch = allText.match(/(\d+(?:[.,]\d+)?)\s*(?:nm|newtonmeter)/i);
+    const speedMatch = allText.match(/(\d+(?:[.,]\d+)?)\s*(?:min⁻¹|min-1|1\/min|rpm|u\/min)/i);
+    const ratioMatch = allText.match(/(?:übersetzung|ratio|rapport|rapporto)[:\s]*(\d+(?:[.,]\d+)?)\s*:\s*1/i);
+
+    return {
+      email: emailMatch ? emailMatch[0] : null,
+      company: companyMatch ? companyMatch[1].trim() : null,
+      name: nameMatch ? nameMatch[1].trim() : null,
+      phone: phoneMatch ? phoneMatch[0] : null,
+      outputTorque: torqueMatch ? torqueMatch[1] : null,
+      outputSpeed: speedMatch ? speedMatch[1] : null,
+      ratio: ratioMatch ? ratioMatch[1] : null,
+      // Weitere Felder können bei Bedarf ergänzt werden
+      application: extractField(allText, ['anwendung', 'application', 'applicazione']),
+      driveType: extractField(allText, ['antrieb', 'motor', 'drive', 'moteur']),
+      country: extractField(allText, ['land', 'country', 'pays', 'paese'])
+    };
+  }
+
+  // Feld aus Text extrahieren
+  function extractField(text, keywords) {
+    for (const keyword of keywords) {
+      const regex = new RegExp(`${keyword}[:\\s]+([^\\n,]+)`, 'i');
+      const match = text.match(regex);
+      if (match) return match[1].trim();
+    }
+    return null;
+  }
+
+  // UI-Sprache aktualisieren
+  function updateUILanguage() {
+    const widget = document.getElementById('akim-chatbot');
+    widget.querySelector('.akim-chat-header h3').textContent = t('title');
+    widget.querySelector('.akim-chat-header p').textContent = t('subtitle');
+    widget.querySelector('.akim-chat-input').placeholder = t('placeholder');
+  }
+
+  // Hilfsfunktionen
+  function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+  }
+
+  function formatTime(date) {
+    return date.toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // Browser-Sprache erkennen
+  function detectBrowserLanguage() {
+    const lang = navigator.language?.substring(0, 2).toLowerCase();
+    return ['de', 'en', 'fr', 'it'].includes(lang) ? lang : 'de';
+  }
+
+  // Initialisierung
+  function init() {
+    // Sprache setzen
+    state.language = detectBrowserLanguage();
+
+    // Widget erstellen
+    const widget = createWidget();
+
+    // Sprachauswahl setzen
+    widget.querySelector('.akim-lang-select').value = state.language;
+
+    // Events einrichten
+    setupEventListeners(widget);
+
+    console.log('AKIM Chatbot initialized');
+  }
+
+  // Starten wenn DOM bereit
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+})();
