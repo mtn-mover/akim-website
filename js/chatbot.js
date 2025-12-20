@@ -417,12 +417,23 @@
         console.error('Failed to save inquiry to database');
       }
 
+      // Lead-Daten mit extrahierten Inquiry-Daten zusammenführen
+      const fullInquiry = {
+        ...inquiry,
+        // Lead-Daten haben Priorität (wurden im Formular eingegeben)
+        name: state.leadData?.name || inquiry.name,
+        email: state.leadData?.email || inquiry.email,
+        phone: state.leadData?.phone || inquiry.phone,
+        company: state.leadData?.company || inquiry.company,
+        country: state.leadData?.country || inquiry.country
+      };
+
       // E-Mail an Verkauf senden (bestehender Endpunkt)
       const response = await fetch(CONFIG.sendEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          inquiry,
+          inquiry: fullInquiry,
           conversation: state.messages,
           language: state.language
         })
