@@ -184,6 +184,19 @@
     closeBtn.addEventListener('click', () => toggleChat(false));
     minimizeBtn.addEventListener('click', () => toggleChat(false));
 
+    // Klick auf Overlay (Hintergrund) schliesst Chat - aber nicht auf dem Fenster selbst
+    widget.addEventListener('click', (e) => {
+      // Nur schliessen wenn direkt auf das Widget geklickt wurde (nicht auf Kindelemente)
+      if (e.target === widget && state.isOpen) {
+        toggleChat(false);
+      }
+    });
+
+    // Verhindere dass Klicks im Chat-Fenster zum Widget durchbubbblen
+    chatWindow.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
     // Nachricht senden
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -220,6 +233,11 @@
     const chatWindow = widget.querySelector('.akim-chat-window');
     const chatButton = widget.querySelector('.akim-chat-button');
     const badge = widget.querySelector('.akim-chat-badge');
+
+    // Debug-Logging um unerwartetes Schliessen zu diagnostizieren
+    if (!open && state.isOpen) {
+      console.log('Chat wird geschlossen. Stack trace:', new Error().stack);
+    }
 
     state.isOpen = open;
 
