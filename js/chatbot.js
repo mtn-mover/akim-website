@@ -357,8 +357,21 @@
 
     } catch (error) {
       console.error('Chat error:', error);
+      console.error('Error details:', error.message, error.name);
       hideTyping();
-      addMessage(t('error'), 'assistant');
+
+      // Spezifische Fehlermeldung bei Netzwerkproblemen
+      if (error.name === 'TypeError' && error.message.includes('Network')) {
+        const networkError = {
+          de: 'Verbindungsproblem. Bitte prüfen Sie Ihre Internetverbindung oder deaktivieren Sie Ad-Blocker für diese Seite.',
+          en: 'Connection problem. Please check your internet connection or disable ad blockers for this site.',
+          fr: 'Problème de connexion. Veuillez vérifier votre connexion Internet ou désactiver les bloqueurs de publicité.',
+          it: 'Problema di connessione. Verificare la connessione Internet o disattivare gli ad blocker.'
+        };
+        addMessage(networkError[state.language] || networkError.de, 'assistant');
+      } else {
+        addMessage(t('error'), 'assistant');
+      }
     } finally {
       state.isLoading = false;
     }
