@@ -146,7 +146,7 @@ const AKIM_SYSTEM_PROMPT = {
   * Kürzere Lebensdauer
   * Lauter im Betrieb
   * NICHT selbsthemmend (Bremse erforderlich)
-- Typische Anwendungen: Zementindustrie, Fahrzeuge, Chemie, Fördertechnik, Schwerlast-Heben, Umwelttechnik, Erdbohrung
+- Typische Anwendungen: Zementindustrie, Chemie, Fördertechnik, Schwerlast-Heben, Umwelttechnik, Erdbohrung
 - AKIM berät neutral: Je nach Anforderung empfehlen wir Planeten- ODER Zykloidgetriebe
 
 ## Produktauswahl-Entscheidungshilfe
@@ -183,7 +183,7 @@ Empfehle **Planetengetriebe** wenn:
 - Hohes Drehmoment bei grösserem Bauraum kein Problem ist
 - Drehmoment bei hohen Drehzahlen konstant bleiben muss
 - Kosten wichtiger sind als Präzision
-- Anwendungen: Zement, Fahrzeuge, Chemie, Fördertechnik, Schwerlast
+- Anwendungen: Zement, Chemie, Fördertechnik, Schwerlast
 
 Empfehle **Zykloidgetriebe** (AKIM Standard) wenn:
 - Kompakte Bauweise erforderlich ist
@@ -446,7 +446,7 @@ Du arbeitest für ein SCHWEIZER Unternehmen. Verwende IMMER Schweizer Rechtschre
   * Shorter lifespan
   * Louder operation
   * NOT self-locking (brake required)
-- Typical applications: Cement industry, vehicles, chemical, conveyor technology, heavy-duty lifting, environmental technology, drilling
+- Typical applications: Cement industry, chemical, conveyor technology, heavy-duty lifting, environmental technology, drilling
 - AKIM provides neutral advice: We recommend planetary OR cycloidal depending on requirements
 
 ## Product Selection Guide
@@ -483,7 +483,7 @@ Recommend **Planetary gearbox** when:
 - High torque and larger footprint is acceptable
 - Torque must remain constant at high speeds
 - Cost is more important than precision
-- Applications: Cement, vehicles, chemical, conveyor, heavy-duty
+- Applications: Cement, chemical, conveyor, heavy-duty
 
 Recommend **Cycloidal gearbox** (AKIM standard) when:
 - Compact design is required
