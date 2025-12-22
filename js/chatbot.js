@@ -179,23 +179,10 @@
     const input = widget.querySelector('.akim-chat-input');
     const langSelect = widget.querySelector('.akim-lang-select');
 
-    // Chat öffnen/schliessen
+    // Chat öffnen/schliessen (NUR über Buttons, nicht durch Klick auf Overlay)
     chatButton.addEventListener('click', () => toggleChat(true));
     closeBtn.addEventListener('click', () => toggleChat(false));
     minimizeBtn.addEventListener('click', () => toggleChat(false));
-
-    // Klick auf Overlay (Hintergrund) schliesst Chat - aber nicht auf dem Fenster selbst
-    widget.addEventListener('click', (e) => {
-      // Nur schliessen wenn direkt auf das Widget geklickt wurde (nicht auf Kindelemente)
-      if (e.target === widget && state.isOpen) {
-        toggleChat(false);
-      }
-    });
-
-    // Verhindere dass Klicks im Chat-Fenster zum Widget durchbubbblen
-    chatWindow.addEventListener('click', (e) => {
-      e.stopPropagation();
-    });
 
     // Nachricht senden
     form.addEventListener('submit', (e) => {
