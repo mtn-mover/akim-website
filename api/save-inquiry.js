@@ -1,5 +1,13 @@
 // AKIM Inquiry Save API - Vercel Serverless Function
 // Speichert abgeschlossene Chat-Anfragen in PostgreSQL
+//
+// WICHTIG: Falls die Tracking-Felder noch nicht in der DB existieren,
+// führe folgendes SQL in der Neon-Konsole aus:
+//
+// ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS browser_language VARCHAR(20);
+// ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS timezone VARCHAR(100);
+// ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS referrer TEXT;
+// ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS form_timestamp TIMESTAMP;
 
 const { neon } = require('@neondatabase/serverless');
 
@@ -37,7 +45,7 @@ module.exports = async function handler(req, res) {
     // Datenbankverbindung
     const sql = neon(process.env.POSTGRES_URL);
 
-    // Inquiry speichern
+    // Inquiry speichern (inkl. Tracking-Daten)
     const result = await sql`
       INSERT INTO inquiries (
         session_id,
@@ -50,6 +58,10 @@ module.exports = async function handler(req, res) {
         messages,
         summary,
         technical_data,
+        browser_language,
+        timezone,
+        referrer,
+        form_timestamp,
         status,
         created_at
       ) VALUES (
@@ -63,6 +75,10 @@ module.exports = async function handler(req, res) {
         ${JSON.stringify(messages)},
         ${summary || null},
         ${technicalData ? JSON.stringify(technicalData) : null},
+        ${leadData?.browserLanguage || null},
+        ${leadData?.timezone || null},
+        ${leadData?.referrer || null},
+        ${leadData?.timestamp || null},
         'new',
         NOW()
       )

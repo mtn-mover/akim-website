@@ -835,6 +835,28 @@
                     </div>
 
                     <div class="detail-section">
+                        <h3>Tracking-Daten</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <label>Browser-Sprache</label>
+                                <span>${inquiry.browser_language || '-'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Zeitzone</label>
+                                <span>${inquiry.timezone || '-'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Herkunft (Referrer)</label>
+                                <span>${inquiry.referrer || 'Direktzugriff'}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Formular ausgefüllt</label>
+                                <span>${inquiry.form_timestamp ? formatDate(inquiry.form_timestamp) : '-'}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
                         <h3>Zusammenfassung</h3>
                         <div class="summary-box">${inquiry.summary || 'Keine Zusammenfassung verfügbar'}</div>
                     </div>
