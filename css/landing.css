@@ -271,6 +271,22 @@ body {
     color: #a0a8b3;
 }
 
+/* E-Mail Validation Error */
+.form-group input.invalid {
+    border-color: #dc3545;
+}
+
+.email-error {
+    display: none;
+    color: #dc3545;
+    font-size: 0.8rem;
+    margin-top: 6px;
+}
+
+.email-error.visible {
+    display: block;
+}
+
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;

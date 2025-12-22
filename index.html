@@ -92,50 +92,21 @@
 
             <div class="contact-form-wrapper">
                 <form id="lead-form" class="lead-form">
-                    <h3>Ihre Kontaktdaten</h3>
+                    <h3>Starten Sie die Beratung</h3>
 
                     <div class="form-group">
-                        <label for="name">Name *</label>
-                        <input type="text" id="name" name="name" required placeholder="Ihr vollständiger Name">
+                        <label for="firstName">Vorname *</label>
+                        <input type="text" id="firstName" name="firstName" required placeholder="Ihr Vorname">
                     </div>
 
                     <div class="form-group">
                         <label for="email">E-Mail *</label>
                         <input type="email" id="email" name="email" required placeholder="ihre.email@firma.com">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="phone">Telefon</label>
-                        <input type="tel" id="phone" name="phone" placeholder="+41 ...">
-                    </div>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="company">Firma</label>
-                            <input type="text" id="company" name="company" placeholder="Firmenname">
-                        </div>
-                        <div class="form-group">
-                            <label for="country">Land *</label>
-                            <select id="country" name="country" required>
-                                <option value="">Bitte wählen</option>
-                                <option value="CH">Schweiz</option>
-                                <option value="DE">Deutschland</option>
-                                <option value="AT">Österreich</option>
-                                <option value="FR">Frankreich</option>
-                                <option value="IT">Italien</option>
-                                <option value="NL">Niederlande</option>
-                                <option value="BE">Belgien</option>
-                                <option value="UK">Grossbritannien</option>
-                                <option value="US">USA</option>
-                                <option value="CN">China</option>
-                                <option value="JP">Japan</option>
-                                <option value="OTHER">Anderes Land</option>
-                            </select>
-                        </div>
+                        <span class="email-error" id="email-error">Bitte geben Sie eine gültige E-Mail-Adresse ein</span>
                     </div>
 
                     <button type="submit" class="submit-button">
-                        <span>Beratung starten</span>
+                        <span>Chat starten</span>
                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l4.93-1.36C8.42 21.5 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm-1 14h2v2h-2v-2zm0-8h2v6h-2V8z"/></svg>
                     </button>
 
@@ -198,18 +169,54 @@
                 }
             });
 
+            // E-Mail Validierung
+            var emailInput = document.getElementById('email');
+            var emailError = document.getElementById('email-error');
+
+            function isValidEmail(email) {
+                var emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                return emailRegex.test(email);
+            }
+
+            emailInput.addEventListener('input', function() {
+                if (emailInput.value && !isValidEmail(emailInput.value)) {
+                    emailError.classList.add('visible');
+                    emailInput.classList.add('invalid');
+                } else {
+                    emailError.classList.remove('visible');
+                    emailInput.classList.remove('invalid');
+                }
+            });
+
+            emailInput.addEventListener('blur', function() {
+                if (emailInput.value && !isValidEmail(emailInput.value)) {
+                    emailError.classList.add('visible');
+                    emailInput.classList.add('invalid');
+                }
+            });
+
             // Lead Form Handler
             var leadForm = document.getElementById('lead-form');
             leadForm.addEventListener('submit', function(e) {
                 e.preventDefault();
 
-                // Daten sammeln
+                // E-Mail validieren
+                if (!isValidEmail(emailInput.value)) {
+                    emailError.classList.add('visible');
+                    emailInput.classList.add('invalid');
+                    emailInput.focus();
+                    return;
+                }
+
+                // Basis-Daten sammeln
                 var formData = {
-                    name: document.getElementById('name').value,
-                    email: document.getElementById('email').value,
-                    phone: document.getElementById('phone').value,
-                    company: document.getElementById('company').value,
-                    country: document.getElementById('country').value
+                    firstName: document.getElementById('firstName').value,
+                    email: emailInput.value,
+                    // Hintergrund-Daten automatisch erfassen
+                    browserLanguage: navigator.language || navigator.userLanguage,
+                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                    referrer: document.referrer || 'direct',
+                    timestamp: new Date().toISOString()
                 };
 
                 // Im localStorage speichern für Chatbot
@@ -241,6 +248,6 @@
     </script>
 
     <!-- AKIM Chatbot Widget -->
-    <script src="js/chatbot.js?v=1.4"></script>
+    <script src="js/chatbot.js?v=2.0"></script>
 </body>
 </html>

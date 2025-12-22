@@ -46,7 +46,16 @@
       no: 'Nein, weiter bearbeiten',
       endPrompt: 'Wie möchten Sie fortfahren?',
       endChat: 'Chat beenden',
-      newInquiry: 'Neue Anfrage besprechen'
+      newInquiry: 'Neue Anfrage besprechen',
+      // Popup für Zusatzdaten
+      completeDataTitle: 'Ihre Kontaktdaten vervollständigen',
+      completeDataSubtitle: 'Optional - für eine schnellere Bearbeitung',
+      lastName: 'Nachname',
+      phone: 'Telefon',
+      company: 'Firma',
+      country: 'Land',
+      sendAnyway: 'Ohne weitere Angaben senden',
+      sendWithData: 'Absenden'
     },
     en: {
       title: 'Alex - AKIM Advisor',
@@ -64,7 +73,16 @@
       no: 'No, continue editing',
       endPrompt: 'How would you like to continue?',
       endChat: 'End chat',
-      newInquiry: 'Discuss new inquiry'
+      newInquiry: 'Discuss new inquiry',
+      // Popup für Zusatzdaten
+      completeDataTitle: 'Complete your contact details',
+      completeDataSubtitle: 'Optional - for faster processing',
+      lastName: 'Last name',
+      phone: 'Phone',
+      company: 'Company',
+      country: 'Country',
+      sendAnyway: 'Send without additional info',
+      sendWithData: 'Submit'
     },
     fr: {
       title: 'Alex - Conseiller AKIM',
@@ -82,7 +100,16 @@
       no: 'Non, continuer',
       endPrompt: 'Comment souhaitez-vous continuer?',
       endChat: 'Terminer le chat',
-      newInquiry: 'Nouvelle demande'
+      newInquiry: 'Nouvelle demande',
+      // Popup für Zusatzdaten
+      completeDataTitle: 'Complétez vos coordonnées',
+      completeDataSubtitle: 'Optionnel - pour un traitement plus rapide',
+      lastName: 'Nom de famille',
+      phone: 'Téléphone',
+      company: 'Entreprise',
+      country: 'Pays',
+      sendAnyway: 'Envoyer sans infos supplémentaires',
+      sendWithData: 'Envoyer'
     },
     it: {
       title: 'Alex - Consulente AKIM',
@@ -100,7 +127,16 @@
       no: 'No, continua',
       endPrompt: 'Come desidera procedere?',
       endChat: 'Termina chat',
-      newInquiry: 'Nuova richiesta'
+      newInquiry: 'Nuova richiesta',
+      // Popup für Zusatzdaten
+      completeDataTitle: 'Completi i suoi dati di contatto',
+      completeDataSubtitle: 'Opzionale - per un\'elaborazione più rapida',
+      lastName: 'Cognome',
+      phone: 'Telefono',
+      company: 'Azienda',
+      country: 'Paese',
+      sendAnyway: 'Invia senza ulteriori informazioni',
+      sendWithData: 'Invia'
     }
   };
 
@@ -398,10 +434,9 @@
 
     const sendBtn = promptEl.querySelector('[data-action="send"]');
     sendBtn.addEventListener('click', () => {
-      // Button deaktivieren um Mehrfachklicks zu verhindern
-      sendBtn.disabled = true;
-      sendBtn.innerHTML = '<span class="akim-spinner"></span> ' + t('sending');
-      submitInquiry();
+      promptEl.remove();
+      // Popup für Zusatzdaten anzeigen
+      showAdditionalDataPopup();
     });
     promptEl.querySelector('[data-action="continue"]').addEventListener('click', () => {
       promptEl.remove();
@@ -411,12 +446,174 @@
     messagesContainer.scrollTop = messagesContainer.scrollHeight;
   }
 
-  // Anfrage absenden
-  async function submitInquiry() {
-    const completionEl = document.querySelector('.akim-chat-completion');
-    if (completionEl) {
-      completionEl.innerHTML = `<p>${t('sending')}</p>`;
-    }
+  // Popup für Zusatzdaten anzeigen
+  function showAdditionalDataPopup() {
+    // Länder-Optionen
+    const countries = {
+      de: [
+        { value: '', label: 'Bitte wählen' },
+        { value: 'CH', label: 'Schweiz' },
+        { value: 'DE', label: 'Deutschland' },
+        { value: 'AT', label: 'Österreich' },
+        { value: 'FR', label: 'Frankreich' },
+        { value: 'IT', label: 'Italien' },
+        { value: 'NL', label: 'Niederlande' },
+        { value: 'BE', label: 'Belgien' },
+        { value: 'UK', label: 'Grossbritannien' },
+        { value: 'US', label: 'USA' },
+        { value: 'CN', label: 'China' },
+        { value: 'JP', label: 'Japan' },
+        { value: 'OTHER', label: 'Anderes Land' }
+      ],
+      en: [
+        { value: '', label: 'Please select' },
+        { value: 'CH', label: 'Switzerland' },
+        { value: 'DE', label: 'Germany' },
+        { value: 'AT', label: 'Austria' },
+        { value: 'FR', label: 'France' },
+        { value: 'IT', label: 'Italy' },
+        { value: 'NL', label: 'Netherlands' },
+        { value: 'BE', label: 'Belgium' },
+        { value: 'UK', label: 'United Kingdom' },
+        { value: 'US', label: 'USA' },
+        { value: 'CN', label: 'China' },
+        { value: 'JP', label: 'Japan' },
+        { value: 'OTHER', label: 'Other' }
+      ],
+      fr: [
+        { value: '', label: 'Veuillez choisir' },
+        { value: 'CH', label: 'Suisse' },
+        { value: 'DE', label: 'Allemagne' },
+        { value: 'AT', label: 'Autriche' },
+        { value: 'FR', label: 'France' },
+        { value: 'IT', label: 'Italie' },
+        { value: 'NL', label: 'Pays-Bas' },
+        { value: 'BE', label: 'Belgique' },
+        { value: 'UK', label: 'Royaume-Uni' },
+        { value: 'US', label: 'États-Unis' },
+        { value: 'CN', label: 'Chine' },
+        { value: 'JP', label: 'Japon' },
+        { value: 'OTHER', label: 'Autre' }
+      ],
+      it: [
+        { value: '', label: 'Selezionare' },
+        { value: 'CH', label: 'Svizzera' },
+        { value: 'DE', label: 'Germania' },
+        { value: 'AT', label: 'Austria' },
+        { value: 'FR', label: 'Francia' },
+        { value: 'IT', label: 'Italia' },
+        { value: 'NL', label: 'Paesi Bassi' },
+        { value: 'BE', label: 'Belgio' },
+        { value: 'UK', label: 'Regno Unito' },
+        { value: 'US', label: 'USA' },
+        { value: 'CN', label: 'Cina' },
+        { value: 'JP', label: 'Giappone' },
+        { value: 'OTHER', label: 'Altro' }
+      ]
+    };
+
+    const countryOptions = (countries[state.language] || countries.de)
+      .map(c => `<option value="${c.value}">${c.label}</option>`)
+      .join('');
+
+    // Popup-Overlay erstellen
+    const overlay = document.createElement('div');
+    overlay.className = 'akim-popup-overlay';
+    overlay.innerHTML = `
+      <div class="akim-popup">
+        <button class="akim-popup-close" aria-label="${t('close')}">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+        <h3>${t('completeDataTitle')}</h3>
+        <p class="akim-popup-subtitle">${t('completeDataSubtitle')}</p>
+
+        <form class="akim-popup-form">
+          <div class="akim-popup-row">
+            <div class="akim-popup-field">
+              <label for="akim-lastName">${t('lastName')}</label>
+              <input type="text" id="akim-lastName" name="lastName" placeholder="${t('lastName')}">
+            </div>
+            <div class="akim-popup-field">
+              <label for="akim-phone">${t('phone')}</label>
+              <input type="tel" id="akim-phone" name="phone" placeholder="+41 ...">
+            </div>
+          </div>
+          <div class="akim-popup-row">
+            <div class="akim-popup-field">
+              <label for="akim-company">${t('company')}</label>
+              <input type="text" id="akim-company" name="company" placeholder="${t('company')}">
+            </div>
+            <div class="akim-popup-field">
+              <label for="akim-country">${t('country')}</label>
+              <select id="akim-country" name="country">
+                ${countryOptions}
+              </select>
+            </div>
+          </div>
+
+          <div class="akim-popup-buttons">
+            <button type="button" class="akim-btn-secondary" data-action="skip">${t('sendAnyway')}</button>
+            <button type="submit" class="akim-btn-primary">${t('sendWithData')}</button>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(overlay);
+
+    // Event Listeners
+    const closeBtn = overlay.querySelector('.akim-popup-close');
+    const form = overlay.querySelector('.akim-popup-form');
+    const skipBtn = overlay.querySelector('[data-action="skip"]');
+
+    // Schliessen-Button: Zurück zum Chat ohne Senden
+    closeBtn.addEventListener('click', () => {
+      overlay.remove();
+    });
+
+    // "Ohne Angaben senden": Direkt absenden
+    skipBtn.addEventListener('click', () => {
+      overlay.remove();
+      doSubmitInquiry();
+    });
+
+    // Formular absenden: Daten speichern und absenden
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+
+      // Zusatzdaten sammeln
+      const additionalData = {
+        lastName: overlay.querySelector('#akim-lastName').value.trim(),
+        phone: overlay.querySelector('#akim-phone').value.trim(),
+        company: overlay.querySelector('#akim-company').value.trim(),
+        country: overlay.querySelector('#akim-country').value
+      };
+
+      // In leadData mergen
+      state.leadData = {
+        ...state.leadData,
+        ...additionalData
+      };
+
+      overlay.remove();
+      doSubmitInquiry();
+    });
+
+    // Fokus auf erstes Feld
+    setTimeout(() => {
+      overlay.querySelector('#akim-lastName').focus();
+    }, 100);
+  }
+
+  // Tatsächliche Anfrage absenden (nach optionalem Popup)
+  async function doSubmitInquiry() {
+    // Lade-Anzeige im Chat
+    const messagesContainer = document.querySelector('.akim-chat-messages');
+    const loadingEl = document.createElement('div');
+    loadingEl.className = 'akim-chat-completion';
+    loadingEl.innerHTML = `<p><span class="akim-spinner"></span> ${t('sending')}</p>`;
+    messagesContainer.appendChild(loadingEl);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
 
     try {
       // Daten aus Konversation extrahieren
@@ -448,17 +645,26 @@
       }
 
       // Lead-Daten mit extrahierten Inquiry-Daten zusammenführen
+      // Vollständiger Name aus firstName + lastName
+      const fullName = [state.leadData?.firstName, state.leadData?.lastName].filter(Boolean).join(' ');
+
       const fullInquiry = {
         ...inquiry,
-        // Lead-Daten haben Priorität (wurden im Formular eingegeben)
-        name: state.leadData?.name || inquiry.name,
+        // Lead-Daten haben Priorität
+        name: fullName || inquiry.name,
+        firstName: state.leadData?.firstName,
+        lastName: state.leadData?.lastName,
         email: state.leadData?.email || inquiry.email,
         phone: state.leadData?.phone || inquiry.phone,
         company: state.leadData?.company || inquiry.company,
-        country: state.leadData?.country || inquiry.country
+        country: state.leadData?.country || inquiry.country,
+        // Hintergrund-Daten
+        browserLanguage: state.leadData?.browserLanguage,
+        timezone: state.leadData?.timezone,
+        referrer: state.leadData?.referrer
       };
 
-      // E-Mail an Verkauf senden (bestehender Endpunkt)
+      // E-Mail an Verkauf senden
       const response = await fetch(CONFIG.sendEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -471,13 +677,11 @@
 
       if (!response.ok) throw new Error('Send error');
 
-      if (completionEl) {
-        completionEl.innerHTML = `<p class="akim-success">${t('sent')}</p>`;
-      }
+      loadingEl.innerHTML = `<p class="akim-success">${t('sent')}</p>`;
 
       // Erfolgsmeldung vom Bot
       setTimeout(() => {
-        if (completionEl) completionEl.remove();
+        loadingEl.remove();
         const successMessages = {
           de: 'Vielen Dank! Ihre Anfrage wurde an unser Verkaufsteam gesendet. Sie erhalten innerhalb von 2 Arbeitstagen eine Offerte per E-Mail.',
           en: 'Thank you! Your inquiry has been sent to our sales team. You will receive a quote by email within 2 business days.',
@@ -494,11 +698,10 @@
 
     } catch (error) {
       console.error('Submit error:', error);
-      if (completionEl) {
-        completionEl.innerHTML = `<p class="akim-error">${t('error')}</p>`;
-      }
+      loadingEl.innerHTML = `<p class="akim-error">${t('error')}</p>`;
     }
   }
+
 
   // Zusammenfassung vom Backend generieren lassen
   async function generateSummary() {
@@ -626,12 +829,13 @@
 
       // Neue Begrüssung in gewählter Sprache
       if (state.leadData) {
-        // Personalisierte Begrüssung mit Lead-Daten
+        // Personalisierte Begrüssung mit Vorname
+        const firstName = state.leadData.firstName || '';
         const greetings = {
-          de: `Guten Tag${state.leadData.name ? ' ' + state.leadData.name.split(' ')[0] : ''}! Ich bin Alex, Ihr persönlicher Berater bei AKIM.${state.leadData.company ? ' Ich sehe, Sie kommen von ' + state.leadData.company + '.' : ''} Wie kann ich Ihnen bei der Auswahl des passenden Getriebes helfen? Was möchten Sie antreiben?`,
-          en: `Hello${state.leadData.name ? ' ' + state.leadData.name.split(' ')[0] : ''}! I'm Alex, your personal advisor at AKIM.${state.leadData.company ? ' I see you\'re from ' + state.leadData.company + '.' : ''} How can I help you select the right gearbox? What do you want to drive?`,
-          fr: `Bonjour${state.leadData.name ? ' ' + state.leadData.name.split(' ')[0] : ''}! Je suis Alex, votre conseiller personnel chez AKIM.${state.leadData.company ? ' Je vois que vous venez de ' + state.leadData.company + '.' : ''} Comment puis-je vous aider à choisir le bon réducteur? Qu'est-ce que vous souhaitez entraîner?`,
-          it: `Buongiorno${state.leadData.name ? ' ' + state.leadData.name.split(' ')[0] : ''}! Sono Alex, il suo consulente personale presso AKIM.${state.leadData.company ? ' Vedo che viene da ' + state.leadData.company + '.' : ''} Come posso aiutarla a scegliere il riduttore giusto? Cosa desidera azionare?`
+          de: `Guten Tag${firstName ? ' ' + firstName : ''}! Ich bin Alex, Ihr persönlicher Berater bei AKIM. Wie kann ich Ihnen bei der Auswahl des passenden Getriebes helfen? Was möchten Sie antreiben?`,
+          en: `Hello${firstName ? ' ' + firstName : ''}! I'm Alex, your personal advisor at AKIM. How can I help you select the right gearbox? What do you want to drive?`,
+          fr: `Bonjour${firstName ? ' ' + firstName : ''}! Je suis Alex, votre conseiller personnel chez AKIM. Comment puis-je vous aider à choisir le bon réducteur? Qu'est-ce que vous souhaitez entraîner?`,
+          it: `Buongiorno${firstName ? ' ' + firstName : ''}! Sono Alex, il suo consulente personale presso AKIM. Come posso aiutarla a scegliere il riduttore giusto? Cosa desidera azionare?`
         };
         addMessage(greetings[state.language] || greetings.de, 'assistant');
       } else {
@@ -663,19 +867,13 @@
   function openWithLead(leadData) {
     state.leadData = leadData;
 
-    // Sprache basierend auf Land setzen
-    // Default ist Englisch für alle Länder deren Sprache wir nicht unterstützen
-    const countryLangMap = {
-      'CH': 'de', 'DE': 'de', 'AT': 'de',
-      'FR': 'fr', 'BE': 'fr',
-      'IT': 'it',
-      'NL': 'en',  // Niederlande → Englisch
-      'UK': 'en', 'US': 'en',
-      'CN': 'en',  // China → Englisch
-      'JP': 'en',  // Japan → Englisch
-      'OTHER': 'en'
-    };
-    state.language = countryLangMap[leadData.country] || 'en';
+    // Sprache basierend auf Browser-Sprache setzen (wurde im Formular erfasst)
+    if (leadData.browserLanguage) {
+      const browserLang = leadData.browserLanguage.substring(0, 2).toLowerCase();
+      state.language = ['de', 'en', 'fr', 'it'].includes(browserLang) ? browserLang : 'en';
+    } else {
+      state.language = detectBrowserLanguage();
+    }
 
     const widget = document.getElementById('akim-chatbot');
     if (widget) {
@@ -686,13 +884,14 @@
     // Chat öffnen
     toggleChat(true);
 
-    // Personalisierte Begrüssung
+    // Personalisierte Begrüssung mit Vorname
     if (state.messages.length === 0) {
+      const firstName = leadData.firstName || '';
       const greetings = {
-        de: `Guten Tag${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! Ich bin Alex, Ihr persönlicher Berater bei AKIM.${leadData.company ? ' Ich sehe, Sie kommen von ' + leadData.company + '.' : ''} Wie kann ich Ihnen bei der Auswahl des passenden Getriebes helfen? Was möchten Sie antreiben?`,
-        en: `Hello${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! I'm Alex, your personal advisor at AKIM.${leadData.company ? ' I see you\'re from ' + leadData.company + '.' : ''} How can I help you select the right gearbox? What do you want to drive?`,
-        fr: `Bonjour${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! Je suis Alex, votre conseiller personnel chez AKIM.${leadData.company ? ' Je vois que vous venez de ' + leadData.company + '.' : ''} Comment puis-je vous aider à choisir le bon réducteur? Qu'est-ce que vous souhaitez entraîner?`,
-        it: `Buongiorno${leadData.name ? ' ' + leadData.name.split(' ')[0] : ''}! Sono Alex, il suo consulente personale presso AKIM.${leadData.company ? ' Vedo che viene da ' + leadData.company + '.' : ''} Come posso aiutarla a scegliere il riduttore giusto? Cosa desidera azionare?`
+        de: `Guten Tag${firstName ? ' ' + firstName : ''}! Ich bin Alex, Ihr persönlicher Berater bei AKIM. Wie kann ich Ihnen bei der Auswahl des passenden Getriebes helfen? Was möchten Sie antreiben?`,
+        en: `Hello${firstName ? ' ' + firstName : ''}! I'm Alex, your personal advisor at AKIM. How can I help you select the right gearbox? What do you want to drive?`,
+        fr: `Bonjour${firstName ? ' ' + firstName : ''}! Je suis Alex, votre conseiller personnel chez AKIM. Comment puis-je vous aider à choisir le bon réducteur? Qu'est-ce que vous souhaitez entraîner?`,
+        it: `Buongiorno${firstName ? ' ' + firstName : ''}! Sono Alex, il suo consulente personale presso AKIM. Come posso aiutarla a scegliere il riduttore giusto? Cosa desidera azionare?`
       };
       addMessage(greetings[state.language] || greetings.de, 'assistant');
     }
