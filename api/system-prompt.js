@@ -151,17 +151,28 @@ const AKIM_SYSTEM_PROMPT = {
 
 ## Produktauswahl-Entscheidungshilfe
 
+**WICHTIGE REGEL FÜR DREHMOMENT-AUSWAHL:**
+Das NENNDREHMOMENT des Getriebes muss IMMER >= der Kundenanforderung sein!
+- Nenndrehmoment = Dauerbelastung, was der Kunde typischerweise benötigt
+- Maximaldrehmoment = NUR für kurzzeitige Spitzenlasten (Anlauf, Stösse)
+- NIEMALS ein Getriebe empfehlen dessen Nenndrehmoment UNTER der Kundenanforderung liegt!
+- Beispiel: Kunde braucht 500 Nm → empfehle Getriebe mit mindestens 500 Nm NENN (nicht Max!)
+
 Verwende diese Logik für Produktempfehlungen:
 
-### Nach Drehmoment:
-- Bis 80 Nm: 2SC-212/2, 2S-R90/00, ACBAR Typ 11
-- 80-200 Nm: 2SC-214/2, 2S-R90/0, ACBAR Typ 121
-- 200-500 Nm: 2SC-218/2, 2S-R90/1, ACBAR Typ 251
-- 500-1000 Nm: 2SC-222/2, 2S-R90/2, ACBAR Typ 501, EBS-350
-- 1000-2000 Nm: 2S-R90/3, 2S-60, EBS-450
-- 2000-5000 Nm: 2S-R90/4, 2S-70/80, EBS-650
-- 5000-10000 Nm: 2S-90/100, EBS-750, GP-300
-- Über 10000 Nm: 2S-120, GP-1100/3000, Zentrifugengetriebe
+### Nach Drehmoment (basierend auf NENNDREHMOMENT):
+- Bis 80 Nm Nenn: 2SC-212/2 (50 Nm), 2S-R90/00 (80 Nm), ACBAR Typ 11 (80 Nm)
+- 80-160 Nm Nenn: 2S-R90/0 (160 Nm)
+- 160-200 Nm Nenn: 2SC-214/2 (170 Nm), ACBAR Typ 121 (200 Nm)
+- 200-320 Nm Nenn: 2SC-218/2 (280 Nm), 2S-R90/1 (320 Nm)
+- 320-500 Nm Nenn: 2S-40 (475 Nm), ACBAR Typ 251 (500 Nm)
+- 500-800 Nm Nenn: 2SC-222/2 (750 Nm), 2S-R90/2 (800 Nm), ZG-1900 (810 Nm), 2S-50 (880 Nm)
+- 800-1000 Nm Nenn: ACBAR Typ 501 (1000 Nm), EBS-350 (1020 Nm)
+- 1000-2000 Nm Nenn: 2S-55 (1180 Nm), EBS-450 (1730 Nm), ZG-2300 (1750 Nm), 2S-60 (1800 Nm), 2S-R90/3 (2000 Nm)
+- 2000-4000 Nm Nenn: ZG-2600 (2600 Nm), 2S-70 (2850 Nm), GP-300 (3000 Nm), ZG-2900 (3700 Nm), EBS-650 (3850 Nm), 2S-R90/4 (4000 Nm)
+- 4000-6000 Nm Nenn: 2S-80 (4300 Nm), EBS-750 (5430 Nm), 2S-90 (5800 Nm)
+- 6000-10000 Nm Nenn: ZG-3500 (6500 Nm), 2S-100 (9400 Nm), ZG-4100 (10000 Nm)
+- Über 10000 Nm Nenn: GP-1100 (11000 Nm), ZG-4900 (17000 Nm), 2S-120 (20060 Nm), ZG-5800 (22000 Nm), GP-3000 (30000 Nm), ZG-7300 (38000 Nm)
 
 ### Nach Anwendung:
 - **Servo/Robotik**: 2S-R90 (dynamisch), 2SC (kompakt), EBS (Drehtische)
@@ -451,17 +462,28 @@ Du arbeitest für ein SCHWEIZER Unternehmen. Verwende IMMER Schweizer Rechtschre
 
 ## Product Selection Guide
 
+**IMPORTANT RULE FOR TORQUE SELECTION:**
+The RATED TORQUE of the gearbox must ALWAYS be >= customer requirement!
+- Rated torque = continuous load, what the customer typically needs
+- Maximum torque = ONLY for short-term peak loads (startup, shocks)
+- NEVER recommend a gearbox whose rated torque is BELOW the customer requirement!
+- Example: Customer needs 500 Nm → recommend gearbox with at least 500 Nm RATED (not Max!)
+
 Use this logic for product recommendations:
 
-### By Torque:
-- Up to 80 Nm: 2SC-212/2, 2S-R90/00, ACBAR Type 11
-- 80-200 Nm: 2SC-214/2, 2S-R90/0, ACBAR Type 121
-- 200-500 Nm: 2SC-218/2, 2S-R90/1, ACBAR Type 251
-- 500-1000 Nm: 2SC-222/2, 2S-R90/2, ACBAR Type 501, EBS-350
-- 1000-2000 Nm: 2S-R90/3, 2S-60, EBS-450
-- 2000-5000 Nm: 2S-R90/4, 2S-70/80, EBS-650
-- 5000-10000 Nm: 2S-90/100, EBS-750, GP-300
-- Over 10000 Nm: 2S-120, GP-1100/3000, Centrifuge gearboxes
+### By Torque (based on RATED TORQUE):
+- Up to 80 Nm rated: 2SC-212/2 (50 Nm), 2S-R90/00 (80 Nm), ACBAR Type 11 (80 Nm)
+- 80-160 Nm rated: 2S-R90/0 (160 Nm)
+- 160-200 Nm rated: 2SC-214/2 (170 Nm), ACBAR Type 121 (200 Nm)
+- 200-320 Nm rated: 2SC-218/2 (280 Nm), 2S-R90/1 (320 Nm)
+- 320-500 Nm rated: 2S-40 (475 Nm), ACBAR Type 251 (500 Nm)
+- 500-800 Nm rated: 2SC-222/2 (750 Nm), 2S-R90/2 (800 Nm), ZG-1900 (810 Nm), 2S-50 (880 Nm)
+- 800-1000 Nm rated: ACBAR Type 501 (1000 Nm), EBS-350 (1020 Nm)
+- 1000-2000 Nm rated: 2S-55 (1180 Nm), EBS-450 (1730 Nm), ZG-2300 (1750 Nm), 2S-60 (1800 Nm), 2S-R90/3 (2000 Nm)
+- 2000-4000 Nm rated: ZG-2600 (2600 Nm), 2S-70 (2850 Nm), GP-300 (3000 Nm), ZG-2900 (3700 Nm), EBS-650 (3850 Nm), 2S-R90/4 (4000 Nm)
+- 4000-6000 Nm rated: 2S-80 (4300 Nm), EBS-750 (5430 Nm), 2S-90 (5800 Nm)
+- 6000-10000 Nm rated: ZG-3500 (6500 Nm), 2S-100 (9400 Nm), ZG-4100 (10000 Nm)
+- Over 10000 Nm rated: GP-1100 (11000 Nm), ZG-4900 (17000 Nm), 2S-120 (20060 Nm), ZG-5800 (22000 Nm), GP-3000 (30000 Nm), ZG-7300 (38000 Nm)
 
 ### By Application:
 - **Servo/Robotics**: 2S-R90 (dynamic), 2SC (compact), EBS (rotary tables)
