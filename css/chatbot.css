@@ -417,13 +417,22 @@
 /* Spinner Animation */
 .akim-spinner {
   display: inline-block;
-  width: 14px;
-  height: 14px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top-color: white;
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--akim-chat-border);
+  border-top-color: var(--akim-chat-accent);
   border-radius: 50%;
   animation: akimSpin 0.8s linear infinite;
   vertical-align: middle;
+  margin-right: 6px;
+}
+
+/* Spinner in Buttons (weiss) */
+.akim-btn-primary .akim-spinner {
+  width: 14px;
+  height: 14px;
+  border-color: rgba(255, 255, 255, 0.3);
+  border-top-color: white;
   margin-right: 4px;
 }
 
