@@ -184,14 +184,19 @@
     closeBtn.addEventListener('click', () => toggleChat(false));
     minimizeBtn.addEventListener('click', () => toggleChat(false));
 
-    // Nachricht senden
-    form.addEventListener('submit', (e) => {
-      e.preventDefault();
+    // Hilfsfunktion zum Senden der Nachricht
+    function handleSendMessage() {
       const message = input.value.trim();
       if (message && !state.isLoading) {
         sendMessage(message);
         input.value = '';
       }
+    }
+
+    // Nachricht senden via Form Submit
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      handleSendMessage();
     });
 
     // Sprache wechseln (nur wenn noch nicht gesperrt)
@@ -205,11 +210,12 @@
       updateUILanguage();
     });
 
-    // Enter zum Senden
+    // Enter zum Senden - direkt handleSendMessage aufrufen statt Event dispatchen
+    // (Firefox hat Probleme mit dispatchEvent für untrusted submit events)
     input.addEventListener('keypress', (e) => {
       if (e.key === 'Enter' && !e.shiftKey) {
         e.preventDefault();
-        form.dispatchEvent(new Event('submit'));
+        handleSendMessage();
       }
     });
   }
