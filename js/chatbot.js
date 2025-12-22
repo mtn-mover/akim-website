@@ -655,7 +655,8 @@
   // Browser-Sprache erkennen
   function detectBrowserLanguage() {
     const lang = navigator.language?.substring(0, 2).toLowerCase();
-    return ['de', 'en', 'fr', 'it'].includes(lang) ? lang : 'de';
+    // Default ist Englisch für nicht unterstützte Sprachen
+    return ['de', 'en', 'fr', 'it'].includes(lang) ? lang : 'en';
   }
 
   // Chatbot öffnen mit Lead-Daten
@@ -663,13 +664,18 @@
     state.leadData = leadData;
 
     // Sprache basierend auf Land setzen
+    // Default ist Englisch für alle Länder deren Sprache wir nicht unterstützen
     const countryLangMap = {
       'CH': 'de', 'DE': 'de', 'AT': 'de',
       'FR': 'fr', 'BE': 'fr',
       'IT': 'it',
-      'UK': 'en', 'US': 'en', 'OTHER': 'en'
+      'NL': 'en',  // Niederlande → Englisch
+      'UK': 'en', 'US': 'en',
+      'CN': 'en',  // China → Englisch
+      'JP': 'en',  // Japan → Englisch
+      'OTHER': 'en'
     };
-    state.language = countryLangMap[leadData.country] || 'de';
+    state.language = countryLangMap[leadData.country] || 'en';
 
     const widget = document.getElementById('akim-chatbot');
     if (widget) {
