@@ -105,6 +105,12 @@
                         <span class="email-error" id="email-error">Bitte geben Sie eine gültige E-Mail-Adresse ein</span>
                     </div>
 
+                    <!-- Honeypot: Verstecktes Feld gegen Bots (per CSS versteckt, nicht display:none) -->
+                    <div class="form-group" style="position: absolute; left: -9999px; opacity: 0; height: 0; overflow: hidden;" aria-hidden="true">
+                        <label for="website">Website</label>
+                        <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+                    </div>
+
                     <button type="submit" class="submit-button">
                         <span>Chat starten</span>
                         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l4.93-1.36C8.42 21.5 10.15 22 12 22c5.52 0 10-4.48 10-10S17.52 2 12 2zm-1 14h2v2h-2v-2zm0-8h2v6h-2V8z"/></svg>
@@ -205,6 +211,14 @@
                     emailError.classList.add('visible');
                     emailInput.classList.add('invalid');
                     emailInput.focus();
+                    return;
+                }
+
+                // Honeypot prüfen (Bot-Schutz)
+                var honeypot = document.getElementById('website').value;
+                if (honeypot) {
+                    // Bot erkannt - still fehlschlagen
+                    console.log('Form submission blocked');
                     return;
                 }
 

@@ -5,14 +5,48 @@
 const { AKIM_SYSTEM_PROMPT, detectLanguage } = require('./system-prompt');
 const rag = require('./rag');
 
-// CORS Headers für die Response
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type',
-};
+// In-Memory Rate Limiting (wird bei Serverless-Funktionen pro Instance zurückgesetzt)
+// Für Produktion: Redis oder Vercel KV empfohlen
+const rateLimitMap = new Map();
+const RATE_LIMIT_WINDOW = 60000; // 1 Minute
+const RATE_LIMIT_MAX = 20; // Max 20 Anfragen pro Minute pro IP
+
+// Rate Limit prüfen
+function checkRateLimit(ip) {
+  const now = Date.now();
+  const windowStart = now - RATE_LIMIT_WINDOW;
+
+  // Alte Einträge bereinigen
+  if (rateLimitMap.size > 1000) {
+    for (const [key, data] of rateLimitMap) {
+      if (data.timestamp < windowStart) {
+        rateLimitMap.delete(key);
+      }
+    }
+  }
+
+  const current = rateLimitMap.get(ip);
+  if (!current || current.timestamp < windowStart) {
+    rateLimitMap.set(ip, { count: 1, timestamp: now });
+    return { allowed: true, remaining: RATE_LIMIT_MAX - 1 };
+  }
+
+  if (current.count >= RATE_LIMIT_MAX) {
+    return { allowed: false, remaining: 0 };
+  }
+
+  current.count++;
+  return { allowed: true, remaining: RATE_LIMIT_MAX - current.count };
+}
 
 module.exports = async function handler(req, res) {
+  // CORS Headers
+  const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://chat.akim.ch';
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     res.status(200).json({ message: 'OK' });
@@ -25,8 +59,32 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  // Rate Limiting
+  const clientIP = req.headers['x-forwarded-for']?.split(',')[0] ||
+                   req.headers['x-real-ip'] ||
+                   req.connection?.remoteAddress ||
+                   'unknown';
+
+  const rateLimit = checkRateLimit(clientIP);
+  res.setHeader('X-RateLimit-Remaining', rateLimit.remaining.toString());
+
+  if (!rateLimit.allowed) {
+    res.status(429).json({ error: 'Too many requests. Please wait a moment.' });
+    return;
+  }
+
   try {
-    const { messages, sessionId, leadData, language: clientLanguage } = req.body;
+    const { messages, sessionId, leadData, language: clientLanguage, _honeypot } = req.body;
+
+    // Honeypot-Check: Wenn das versteckte Feld ausgefüllt ist, ist es ein Bot
+    if (_honeypot) {
+      // Fake-Erfolg zurückgeben um Bots nicht zu informieren
+      res.status(200).json({
+        message: 'Thank you for your message.',
+        sessionId: 'blocked'
+      });
+      return;
+    }
 
     if (!messages || !Array.isArray(messages)) {
       res.status(400).json({ error: 'Messages array required' });

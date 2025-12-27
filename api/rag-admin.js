@@ -23,17 +23,24 @@ try {
 
 module.exports = async function handler(req, res) {
   // CORS Headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || 'https://chat.akim.ch');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
     return;
   }
 
-  // Auth deaktiviert - Seite ist nicht öffentlich verlinkt
-  // Falls du später Auth willst: ADMIN_API_KEY in Vercel setzen
+  // API-Key Authentifizierung (zusätzlich zu Vercel Password Protection)
+  const authHeader = req.headers.authorization;
+  const expectedKey = process.env.ADMIN_API_KEY;
+
+  if (expectedKey && authHeader !== `Bearer ${expectedKey}`) {
+    res.status(401).json({ error: 'Unauthorized' });
+    return;
+  }
 
   // Datenbankverbindung
   const sql = neon(process.env.POSTGRES_URL);
