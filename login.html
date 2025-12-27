@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin Login - AKIM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .login-container {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .logo img {
+            height: 50px;
+        }
+
+        .logo h1 {
+            font-size: 1.25rem;
+            color: #333;
+            margin-top: 0.5rem;
+        }
+
+        h2 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #0066cc;
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0.875rem;
+            background: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn:hover {
+            background: #0052a3;
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c00;
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+            text-align: center;
+        }
+
+        .error.show {
+            display: block;
+        }
+
+        .links {
+            margin-top: 1.5rem;
+            text-align: center;
+            font-size: 0.875rem;
+            color: #666;
+        }
+
+        .links a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">
+            <img src="images/logo_akim_neu2.png" alt="AKIM" onerror="this.style.display='none'">
+            <h1>AKIM Admin</h1>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <form id="login-form">
+            <div class="form-group">
+                <label for="password">Passwort</label>
+                <input type="password" id="password" name="password" required autofocus placeholder="Admin-Passwort eingeben">
+            </div>
+
+            <button type="submit" class="btn" id="submit-btn">Anmelden</button>
+        </form>
+
+        <div class="links">
+            <a href="/">Zurück zur Website</a>
+        </div>
+    </div>
+
+    <script>
+        // Prüfen ob bereits eingeloggt
+        const token = localStorage.getItem('akim_admin_token');
+        if (token) {
+            // Token verifizieren
+            fetch('/api/auth?action=verify', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.valid) {
+                    // Zum ursprünglichen Ziel weiterleiten
+                    const redirect = new URLSearchParams(window.location.search).get('redirect') || '/admin.html';
+                    window.location.href = redirect;
+                }
+            });
+        }
+
+        // Login Form
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const password = document.getElementById('password').value;
+            const errorEl = document.getElementById('error');
+            const submitBtn = document.getElementById('submit-btn');
+
+            errorEl.classList.remove('show');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Wird geprüft...';
+
+            try {
+                const response = await fetch('/api/auth?action=login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    // Token speichern
+                    localStorage.setItem('akim_admin_token', data.token);
+
+                    // Weiterleiten
+                    const redirect = new URLSearchParams(window.location.search).get('redirect') || '/admin.html';
+                    window.location.href = redirect;
+                } else {
+                    errorEl.textContent = 'Falsches Passwort';
+                    errorEl.classList.add('show');
+                    document.getElementById('password').select();
+                }
+            } catch (error) {
+                errorEl.textContent = 'Verbindungsfehler. Bitte erneut versuchen.';
+                errorEl.classList.add('show');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Anmelden';
+            }
+        });
+    </script>
+</body>
+</html>

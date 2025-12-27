@@ -3,7 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
     <title>AKIM Chatbot Admin - Anfragen</title>
+    <script>
+        // Auth-Check: Weiterleitung zum Login wenn nicht authentifiziert
+        (function() {
+            const token = localStorage.getItem('akim_admin_token');
+            if (!token) {
+                window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+                return;
+            }
+            // Token asynchron verifizieren
+            fetch('/api/auth?action=verify', {
+                method: 'POST',
+                headers: { 'Authorization': 'Bearer ' + token }
+            }).then(r => r.json()).then(data => {
+                if (!data.valid) {
+                    localStorage.removeItem('akim_admin_token');
+                    window.location.href = '/login.html?redirect=' + encodeURIComponent(window.location.pathname);
+                }
+            }).catch(() => {
+                // Bei Netzwerkfehler trotzdem laden (offline-tolerant)
+            });
+        })();
+    </script>
     <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32x32.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -552,21 +575,8 @@
     </style>
 </head>
 <body>
-    <!-- Login -->
-    <div id="login-view" class="login-container">
-        <h2>AKIM Admin Login</h2>
-        <form class="login-form" id="login-form">
-            <div class="form-group">
-                <label for="api-key">Admin API Key</label>
-                <input type="password" id="api-key" placeholder="API Key eingeben..." required>
-            </div>
-            <button type="submit">Anmelden</button>
-            <p class="login-error" id="login-error" style="display: none;"></p>
-        </form>
-    </div>
-
-    <!-- Admin View -->
-    <div id="admin-view" style="display: none;">
+    <!-- Admin View (Login erfolgt über /login.html) -->
+    <div id="admin-view">
         <header class="admin-header">
             <h1>
                 <img src="images/logo_akim_neu2.png" alt="AKIM">
@@ -643,55 +653,31 @@
 
     <script>
         // State
-        let apiKey = localStorage.getItem('akim_admin_key') || '';
+        let authToken = localStorage.getItem('akim_admin_token') || '';
         let inquiries = [];
         let currentFilter = 'all';
 
         // Elements
-        const loginView = document.getElementById('login-view');
         const adminView = document.getElementById('admin-view');
-        const loginForm = document.getElementById('login-form');
-        const apiKeyInput = document.getElementById('api-key');
-        const loginError = document.getElementById('login-error');
         const inquiriesList = document.getElementById('inquiries-list');
         const detailModal = document.getElementById('detail-modal');
         const modalBody = document.getElementById('modal-body');
 
-        // Check if already logged in
-        if (apiKey) {
-            showAdminView();
-            loadInquiries();
+        // Auth-Header für API-Calls
+        function getAuthHeaders() {
+            return {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${authToken}`
+            };
         }
 
-        // Login form
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            apiKey = apiKeyInput.value.trim();
-
-            // Test API key
-            try {
-                const response = await fetch('/api/get-inquiries?limit=1', {
-                    headers: { 'Authorization': `Bearer ${apiKey}` }
-                });
-
-                if (response.ok) {
-                    localStorage.setItem('akim_admin_key', apiKey);
-                    showAdminView();
-                    loadInquiries();
-                } else {
-                    showLoginError('Ungültiger API Key');
-                }
-            } catch (error) {
-                showLoginError('Verbindungsfehler');
-            }
-        });
+        // Start: Daten laden
+        loadInquiries();
 
         // Logout
         document.getElementById('logout-btn').addEventListener('click', () => {
-            localStorage.removeItem('akim_admin_key');
-            apiKey = '';
-            loginView.style.display = 'block';
-            adminView.style.display = 'none';
+            localStorage.removeItem('akim_admin_token');
+            window.location.href = '/login.html';
         });
 
         // Refresh
@@ -713,22 +699,13 @@
             if (e.target === detailModal) closeModal();
         });
 
-        function showAdminView() {
-            loginView.style.display = 'none';
-            adminView.style.display = 'block';
-        }
-
-        function showLoginError(message) {
-            loginError.textContent = message;
-            loginError.style.display = 'block';
-        }
 
         async function loadInquiries() {
             inquiriesList.innerHTML = '<div class="loading"><div class="spinner"></div><p>Lade Anfragen...</p></div>';
 
             try {
                 const response = await fetch('/api/get-inquiries?limit=100', {
-                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                    headers: { 'Authorization': `Bearer ${authToken}` }
                 });
 
                 if (!response.ok) throw new Error('Failed to load');
@@ -788,7 +765,7 @@
 
             try {
                 const response = await fetch(`/api/get-inquiries?id=${id}`, {
-                    headers: { 'Authorization': `Bearer ${apiKey}` }
+                    headers: { 'Authorization': `Bearer ${authToken}` }
                 });
 
                 if (!response.ok) throw new Error('Failed to load');
@@ -910,7 +887,7 @@
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
+                        'Authorization': `Bearer ${authToken}`
                     },
                     body: JSON.stringify({ id, status })
                 });
@@ -932,7 +909,7 @@
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${apiKey}`
+                        'Authorization': `Bearer ${authToken}`
                     },
                     body: JSON.stringify({ id, notes })
                 });
@@ -981,7 +958,7 @@
         // Check for ID in URL (from email link)
         const urlParams = new URLSearchParams(window.location.search);
         const inquiryId = urlParams.get('id');
-        if (inquiryId && apiKey) {
+        if (inquiryId && authToken) {
             setTimeout(() => openDetail(parseInt(inquiryId)), 500);
         }
     </script>
