@@ -751,6 +751,7 @@
       promptEl.remove();
       // Chat zurücksetzen für neue Anfrage
       state.messages = [];
+      state.sessionId = null;  // Neue Session-ID für neue Anfrage
       const messagesEl = document.querySelector('.akim-chat-messages');
       messagesEl.innerHTML = '';
       // Neue Begrüssung
