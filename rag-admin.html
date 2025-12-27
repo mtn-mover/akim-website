@@ -291,7 +291,7 @@
 
         .edit-panel-content {
             padding: 1.5rem;
-            max-height: calc(100vh - 300px);
+            max-height: calc(100vh - 200px);
             overflow-y: auto;
         }
 
@@ -427,10 +427,29 @@
         .modal-header {
             padding: 1rem 1.5rem;
             border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .modal-header h3 {
             font-size: 1.125rem;
+            margin: 0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: var(--text-light);
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+
+        .modal-close:hover {
+            color: var(--danger);
         }
 
         .modal-body {
@@ -520,6 +539,14 @@
             <div class="search-box">
                 <input type="text" id="search-input" placeholder="Produkte durchsuchen..." oninput="filterProducts()">
             </div>
+            <button class="btn btn-outline" onclick="exportCSV()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                CSV Export
+            </button>
+            <button class="btn btn-outline" onclick="showImportCSV()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16h6v-6h4l-7-7-7 7h4v6zm-4 2h14v2H5v-2z"/></svg>
+                CSV Import
+            </button>
             <button class="btn btn-outline" onclick="testSearch()">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
                 RAG-Suche testen
@@ -658,6 +685,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h3>RAG-Suche testen</h3>
+                <button class="modal-close" onclick="closeModal('search-modal')" title="Schliessen">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
@@ -678,6 +706,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h3>Synchronisierung</h3>
+                <button class="modal-close" onclick="closeModal('sync-modal')" title="Schliessen">&times;</button>
             </div>
             <div class="modal-body">
                 <p id="sync-status">Vorbereitung...</p>
@@ -697,6 +726,7 @@
         <div class="modal">
             <div class="modal-header">
                 <h3>Produkte importieren</h3>
+                <button class="modal-close" onclick="closeModal('import-modal')" title="Schliessen">&times;</button>
             </div>
             <div class="modal-body">
                 <div class="alert alert-info">
@@ -708,6 +738,44 @@
             <div class="modal-footer">
                 <button class="btn btn-outline" onclick="closeModal('import-modal')">Abbrechen</button>
                 <button class="btn btn-warning" onclick="executeImport()" id="import-btn">Importieren</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSV Import Modal -->
+    <div class="modal-overlay" id="csv-import-modal">
+        <div class="modal" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>CSV Import</h3>
+                <button class="modal-close" onclick="closeModal('csv-import-modal')" title="Schliessen">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <strong>Format:</strong> CSV-Datei mit Semikolon (;) als Trennzeichen.<br>
+                    Die erste Zeile muss die Spaltenüberschriften enthalten.<br>
+                    <strong>Pflichtfelder:</strong> id, name, category, rated_torque_nm, max_torque_nm, description_de<br>
+                    <strong>Tipp:</strong> Exportiere zuerst die aktuelle Datenbank als CSV-Vorlage.
+                </div>
+
+                <div class="form-group">
+                    <label for="csv-file">CSV-Datei auswählen</label>
+                    <input type="file" id="csv-file" accept=".csv,.txt" style="padding: 0.5rem; border: 2px dashed var(--border); border-radius: 4px; width: 100%;">
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="csv-sync-after" checked>
+                        Nach Import automatisch zu Pinecone synchronisieren
+                    </label>
+                </div>
+
+                <div id="csv-preview" style="margin-top: 1rem; max-height: 200px; overflow-y: auto;"></div>
+                <p id="csv-import-status" style="margin-top: 1rem;"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('csv-import-modal')">Abbrechen</button>
+                <button class="btn btn-primary" onclick="previewCSV()">Vorschau</button>
+                <button class="btn btn-success" onclick="executeCSVImport()" id="csv-import-btn" disabled>Importieren</button>
             </div>
         </div>
     </div>
@@ -1160,6 +1228,277 @@
             setTimeout(() => {
                 toast.classList.remove('show');
             }, 3000);
+        }
+
+        // ============================================
+        // CSV EXPORT / IMPORT FUNCTIONS
+        // ============================================
+
+        // CSV Export - alle Produkte als CSV herunterladen
+        function exportCSV() {
+            if (products.length === 0) {
+                showToast('Keine Produkte zum Exportieren', 'error');
+                return;
+            }
+
+            // CSV Header - alle Felder
+            const headers = [
+                'id', 'name', 'category', 'series',
+                'rated_torque_nm', 'max_torque_nm',
+                'inertia_kgcm2', 'weight_kg', 'backlash_arcmin',
+                'ratio_range', 'max_input_speed_rpm', 'efficiency_percent',
+                'description_de', 'description_en',
+                'applications', 'features'
+            ];
+
+            // CSV Zeilen erstellen
+            const rows = products.map(p => {
+                return headers.map(h => {
+                    let value = p[h];
+
+                    // Arrays zu kommaseparierten Strings
+                    if (Array.isArray(value)) {
+                        value = value.join(', ');
+                    }
+
+                    // Null/undefined zu leerem String
+                    if (value === null || value === undefined) {
+                        value = '';
+                    }
+
+                    // Strings mit Sonderzeichen in Anführungszeichen setzen
+                    value = String(value);
+                    if (value.includes(';') || value.includes('"') || value.includes('\n')) {
+                        value = '"' + value.replace(/"/g, '""') + '"';
+                    }
+
+                    return value;
+                }).join(';');
+            });
+
+            // CSV zusammensetzen (mit BOM für Excel UTF-8 Erkennung)
+            const bom = '\uFEFF';
+            const csv = bom + headers.join(';') + '\n' + rows.join('\n');
+
+            // Download
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `akim-produkte-${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+
+            showToast(`${products.length} Produkte exportiert`, 'success');
+        }
+
+        // CSV Import Modal anzeigen
+        function showImportCSV() {
+            document.getElementById('csv-file').value = '';
+            document.getElementById('csv-preview').innerHTML = '';
+            document.getElementById('csv-import-status').textContent = '';
+            document.getElementById('csv-import-btn').disabled = true;
+            showModal('csv-import-modal');
+        }
+
+        // Globale Variable für geparste CSV-Daten
+        let parsedCSVData = [];
+
+        // CSV Vorschau
+        function previewCSV() {
+            const fileInput = document.getElementById('csv-file');
+            const previewEl = document.getElementById('csv-preview');
+            const statusEl = document.getElementById('csv-import-status');
+            const importBtn = document.getElementById('csv-import-btn');
+
+            if (!fileInput.files || !fileInput.files[0]) {
+                showToast('Bitte CSV-Datei auswählen', 'error');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const text = e.target.result;
+                    parsedCSVData = parseCSV(text);
+
+                    if (parsedCSVData.length === 0) {
+                        previewEl.innerHTML = '<p style="color: var(--danger);">Keine Daten gefunden</p>';
+                        importBtn.disabled = true;
+                        return;
+                    }
+
+                    // Validierung
+                    const requiredFields = ['id', 'name', 'category', 'rated_torque_nm', 'max_torque_nm', 'description_de'];
+                    const firstRow = parsedCSVData[0];
+                    const missingFields = requiredFields.filter(f => !(f in firstRow));
+
+                    if (missingFields.length > 0) {
+                        previewEl.innerHTML = `<p style="color: var(--danger);">Pflichtfelder fehlen: ${missingFields.join(', ')}</p>`;
+                        importBtn.disabled = true;
+                        return;
+                    }
+
+                    // Vorschau anzeigen
+                    previewEl.innerHTML = `
+                        <p style="color: var(--success);"><strong>${parsedCSVData.length} Produkte erkannt</strong></p>
+                        <table style="width: 100%; font-size: 0.75rem; margin-top: 0.5rem;">
+                            <thead>
+                                <tr style="background: var(--bg);">
+                                    <th style="padding: 0.25rem;">ID</th>
+                                    <th style="padding: 0.25rem;">Name</th>
+                                    <th style="padding: 0.25rem;">Kategorie</th>
+                                    <th style="padding: 0.25rem;">Drehmoment</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${parsedCSVData.slice(0, 5).map(p => `
+                                    <tr>
+                                        <td style="padding: 0.25rem;">${p.id}</td>
+                                        <td style="padding: 0.25rem;">${p.name}</td>
+                                        <td style="padding: 0.25rem;">${p.category || '-'}</td>
+                                        <td style="padding: 0.25rem;">${p.rated_torque_nm || '-'} Nm</td>
+                                    </tr>
+                                `).join('')}
+                                ${parsedCSVData.length > 5 ? '<tr><td colspan="4" style="padding: 0.25rem; text-align: center;">...</td></tr>' : ''}
+                            </tbody>
+                        </table>
+                    `;
+
+                    importBtn.disabled = false;
+
+                } catch (error) {
+                    previewEl.innerHTML = `<p style="color: var(--danger);">Fehler beim Parsen: ${error.message}</p>`;
+                    importBtn.disabled = true;
+                }
+            };
+
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        // CSV Parser
+        function parseCSV(text) {
+            const lines = text.split(/\r?\n/).filter(line => line.trim());
+            if (lines.length < 2) return [];
+
+            // Header parsen
+            const headers = lines[0].split(';').map(h => h.trim().replace(/^"|"$/g, ''));
+
+            // Datenzeilen parsen
+            const data = [];
+            for (let i = 1; i < lines.length; i++) {
+                const values = parseCSVLine(lines[i]);
+                if (values.length !== headers.length) continue;
+
+                const obj = {};
+                headers.forEach((h, idx) => {
+                    let value = values[idx];
+
+                    // Numerische Felder konvertieren
+                    if (['rated_torque_nm', 'max_torque_nm', 'max_input_speed_rpm'].includes(h)) {
+                        obj[h] = value ? parseInt(value) : null;
+                    } else if (['inertia_kgcm2', 'weight_kg', 'backlash_arcmin', 'efficiency_percent'].includes(h)) {
+                        obj[h] = value ? parseFloat(value.replace(',', '.')) : null;
+                    } else if (['applications', 'features'].includes(h)) {
+                        // Kommaseparierte Listen zu Arrays
+                        obj[h] = value ? value.split(',').map(s => s.trim()).filter(Boolean) : [];
+                    } else {
+                        obj[h] = value || null;
+                    }
+                });
+
+                // Nur wenn ID vorhanden
+                if (obj.id) {
+                    data.push(obj);
+                }
+            }
+
+            return data;
+        }
+
+        // CSV Zeile parsen (mit Unterstützung für Anführungszeichen)
+        function parseCSVLine(line) {
+            const values = [];
+            let current = '';
+            let inQuotes = false;
+
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                const nextChar = line[i + 1];
+
+                if (char === '"') {
+                    if (inQuotes && nextChar === '"') {
+                        current += '"';
+                        i++; // Skip next quote
+                    } else {
+                        inQuotes = !inQuotes;
+                    }
+                } else if (char === ';' && !inQuotes) {
+                    values.push(current.trim());
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+
+            values.push(current.trim());
+            return values;
+        }
+
+        // CSV Import ausführen
+        async function executeCSVImport() {
+            if (parsedCSVData.length === 0) {
+                showToast('Keine Daten zum Importieren', 'error');
+                return;
+            }
+
+            const statusEl = document.getElementById('csv-import-status');
+            const importBtn = document.getElementById('csv-import-btn');
+            const syncAfter = document.getElementById('csv-sync-after').checked;
+
+            importBtn.disabled = true;
+            statusEl.innerHTML = `<span class="spinner" style="display: inline-block; width: 16px; height: 16px; margin-right: 0.5rem;"></span>Importiere ${parsedCSVData.length} Produkte...`;
+
+            try {
+                // Produkte über API importieren
+                const response = await fetch(`${API_BASE}/rag-admin?action=import`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ products: parsedCSVData })
+                });
+
+                if (!response.ok) throw new Error('Import failed');
+
+                const result = await response.json();
+                statusEl.innerHTML = `<span style="color: var(--success);">${result.message}</span>`;
+
+                // Optional: Sync nach Import
+                if (syncAfter) {
+                    statusEl.innerHTML += '<br>Synchronisiere zu Pinecone...';
+
+                    const syncResponse = await fetch(`${API_BASE}/rag-admin?action=bulk`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({})
+                    });
+
+                    if (syncResponse.ok) {
+                        const syncResult = await syncResponse.json();
+                        statusEl.innerHTML += `<br><span style="color: var(--success);">${syncResult.message}</span>`;
+                    }
+                }
+
+                showToast('Import erfolgreich', 'success');
+                await loadProducts();
+                await loadStats();
+
+                setTimeout(() => closeModal('csv-import-modal'), 2000);
+
+            } catch (error) {
+                statusEl.innerHTML = `<span style="color: var(--danger);">Fehler: ${error.message}</span>`;
+                showToast('Import fehlgeschlagen', 'error');
+                importBtn.disabled = false;
+            }
         }
     </script>
 </body>
