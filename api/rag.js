@@ -86,6 +86,7 @@ async function upsertDocument(doc) {
   const embedding = await createEmbedding(searchText);
 
   // Upsert to Pinecone - null-Werte durch 0 oder leeren String ersetzen
+  // PostgreSQL DECIMAL kommt als String, daher parseFloat nötig
   await index.upsert([{
     id: doc.id,
     values: embedding,
@@ -93,18 +94,18 @@ async function upsertDocument(doc) {
       name: doc.name || '',
       category: doc.category || '',
       series: doc.series || '',
-      rated_torque_nm: doc.rated_torque_nm || 0,
-      max_torque_nm: doc.max_torque_nm || 0,
+      rated_torque_nm: Number(doc.rated_torque_nm) || 0,
+      max_torque_nm: Number(doc.max_torque_nm) || 0,
       description_de: doc.description_de || '',
       description_en: doc.description_en || '',
       applications: doc.applications || [],
       features: doc.features || [],
-      inertia_kgcm2: doc.inertia_kgcm2 || 0,
-      weight_kg: doc.weight_kg || 0,
-      backlash_arcmin: doc.backlash_arcmin || 0,
+      inertia_kgcm2: Number(doc.inertia_kgcm2) || 0,
+      weight_kg: Number(doc.weight_kg) || 0,
+      backlash_arcmin: Number(doc.backlash_arcmin) || 0,
       ratio_range: doc.ratio_range || '',
-      max_input_speed_rpm: doc.max_input_speed_rpm || 0,
-      efficiency_percent: doc.efficiency_percent || 0,
+      max_input_speed_rpm: Number(doc.max_input_speed_rpm) || 0,
+      efficiency_percent: Number(doc.efficiency_percent) || 0,
       searchText: searchText.substring(0, 1000) // Truncate for metadata limit
     }
   }]);
