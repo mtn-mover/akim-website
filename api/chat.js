@@ -80,9 +80,13 @@ module.exports = async function handler(req, res) {
             return `- ${p.name} (${p.category}): ${p.description || ''} | Drehmoment: ${p.rated_torque_nm}-${p.max_torque_nm} Nm | Anwendungen: ${(p.applications || []).join(', ')}`;
           }).join('\n');
 
+          const ragWarning = language === 'en'
+            ? `\n\nWARNING: ONLY use the product data provided below. NEVER invent or guess technical specifications (weight, inertia, backlash, dimensions, etc.) that are not listed here. If a customer asks for details not in the database, say: "For detailed technical specifications, our specialists will provide you with the complete data sheet."`
+            : `\n\nWICHTIG: Verwende AUSSCHLIESSLICH die unten aufgeführten Produktdaten. ERFINDE NIEMALS technische Spezifikationen (Gewicht, Massenträgheit, Verdrehspiel, Abmessungen, etc.) die nicht aufgeführt sind. Falls ein Kunde nach Details fragt die nicht in der Datenbank sind, sage: "Für detaillierte technische Spezifikationen stellen unsere Spezialisten Ihnen das vollständige Datenblatt zur Verfügung."`;
+
           ragContext = language === 'en'
-            ? `\n\nRELEVANT PRODUCTS FROM DATABASE (use this information to recommend products):\n${productInfo}`
-            : `\n\nRELEVANTE PRODUKTE AUS DATENBANK (nutze diese Informationen für Empfehlungen):\n${productInfo}`;
+            ? `${ragWarning}\n\nRELEVANT PRODUCTS FROM DATABASE:\n${productInfo}`
+            : `${ragWarning}\n\nRELEVANTE PRODUKTE AUS DATENBANK:\n${productInfo}`;
 
           systemPrompt += ragContext;
         }
