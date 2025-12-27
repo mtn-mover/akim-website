@@ -32,14 +32,8 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  // Simple API key auth (optional)
-  const authHeader = req.headers.authorization;
-  const apiKey = process.env.ADMIN_API_KEY;
-
-  if (apiKey && authHeader !== `Bearer ${apiKey}`) {
-    res.status(401).json({ error: 'Unauthorized' });
-    return;
-  }
+  // Auth deaktiviert - Seite ist nicht öffentlich verlinkt
+  // Falls du später Auth willst: ADMIN_API_KEY in Vercel setzen
 
   // Datenbankverbindung
   const sql = neon(process.env.POSTGRES_URL);
