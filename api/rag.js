@@ -42,6 +42,24 @@ async function createEmbedding(text) {
 
 // Upsert document to Pinecone
 async function upsertDocument(doc) {
+  // Validierung: Pflichtfelder prüfen
+  const requiredFields = [
+    { field: 'id', label: 'ID' },
+    { field: 'name', label: 'Name' },
+    { field: 'category', label: 'Kategorie' },
+    { field: 'rated_torque_nm', label: 'Nenndrehmoment' },
+    { field: 'max_torque_nm', label: 'Max. Drehmoment' },
+    { field: 'description_de', label: 'Beschreibung (DE)' }
+  ];
+
+  const missingFields = requiredFields
+    .filter(f => !doc[f.field] && doc[f.field] !== 0)
+    .map(f => f.label);
+
+  if (missingFields.length > 0) {
+    throw new Error(`Pflichtfelder fehlen: ${missingFields.join(', ')}`);
+  }
+
   const { pinecone } = initClients();
   const index = pinecone.index(process.env.PINECONE_INDEX);
 
