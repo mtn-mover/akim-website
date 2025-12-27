@@ -73,7 +73,13 @@ async function upsertDocument(doc) {
     (doc.applications || []).join(', '),
     (doc.features || []).join(', '),
     `${doc.rated_torque_nm} Nm Nenndrehmoment`,
-    `${doc.max_torque_nm} Nm Maximaldrehmoment`
+    `${doc.max_torque_nm} Nm Maximaldrehmoment`,
+    doc.inertia_kgcm2 ? `${doc.inertia_kgcm2} kgcm² Massenträgheit` : null,
+    doc.weight_kg ? `${doc.weight_kg} kg Gewicht` : null,
+    doc.backlash_arcmin ? `${doc.backlash_arcmin} Bogenminuten Verdrehspiel` : null,
+    doc.ratio_range ? `Übersetzung ${doc.ratio_range}` : null,
+    doc.max_input_speed_rpm ? `${doc.max_input_speed_rpm} min-1 Eingangsdrehzahl` : null,
+    doc.efficiency_percent ? `${doc.efficiency_percent}% Wirkungsgrad` : null
   ].filter(Boolean).join(' | ');
 
   // Create embedding
@@ -93,6 +99,12 @@ async function upsertDocument(doc) {
       description_en: doc.description_en || '',
       applications: doc.applications || [],
       features: doc.features || [],
+      inertia_kgcm2: doc.inertia_kgcm2 || 0,
+      weight_kg: doc.weight_kg || 0,
+      backlash_arcmin: doc.backlash_arcmin || 0,
+      ratio_range: doc.ratio_range || '',
+      max_input_speed_rpm: doc.max_input_speed_rpm || 0,
+      efficiency_percent: doc.efficiency_percent || 0,
       searchText: searchText.substring(0, 1000) // Truncate for metadata limit
     }
   }]);
@@ -136,7 +148,13 @@ async function searchDocuments(query, topK = 5, language = 'de') {
     max_torque_nm: match.metadata.max_torque_nm,
     description: language === 'en' ? match.metadata.description_en : match.metadata.description_de,
     applications: match.metadata.applications,
-    features: match.metadata.features
+    features: match.metadata.features,
+    inertia_kgcm2: match.metadata.inertia_kgcm2,
+    weight_kg: match.metadata.weight_kg,
+    backlash_arcmin: match.metadata.backlash_arcmin,
+    ratio_range: match.metadata.ratio_range,
+    max_input_speed_rpm: match.metadata.max_input_speed_rpm,
+    efficiency_percent: match.metadata.efficiency_percent
   }));
 }
 

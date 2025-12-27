@@ -587,6 +587,39 @@
                             </div>
                         </div>
 
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="prod-inertia">Massenträgheit (kgcm²)</label>
+                                <input type="number" step="0.0001" id="prod-inertia" placeholder="z.B. 5.4">
+                            </div>
+                            <div class="form-group">
+                                <label for="prod-weight">Gewicht (kg)</label>
+                                <input type="number" step="0.01" id="prod-weight" placeholder="z.B. 30">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="prod-backlash">Verdrehspiel (Bogenmin.)</label>
+                                <input type="number" step="0.01" id="prod-backlash" placeholder="z.B. 1">
+                            </div>
+                            <div class="form-group">
+                                <label for="prod-efficiency">Wirkungsgrad (%)</label>
+                                <input type="number" step="0.1" id="prod-efficiency" placeholder="z.B. 95">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="prod-ratio-range">Übersetzungsbereich</label>
+                                <input type="text" id="prod-ratio-range" placeholder="z.B. 13-87:1">
+                            </div>
+                            <div class="form-group">
+                                <label for="prod-max-input-speed">Max. Eingangsdrehzahl (min⁻¹)</label>
+                                <input type="number" id="prod-max-input-speed" placeholder="z.B. 3000">
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <label for="prod-desc-de">Beschreibung (DE)</label>
                             <textarea id="prod-desc-de" placeholder="Deutsche Beschreibung..."></textarea>
@@ -835,6 +868,12 @@
             document.getElementById('prod-series').value = product.series || '';
             document.getElementById('prod-rated-torque').value = product.rated_torque_nm || '';
             document.getElementById('prod-max-torque').value = product.max_torque_nm || '';
+            document.getElementById('prod-inertia').value = product.inertia_kgcm2 || '';
+            document.getElementById('prod-weight').value = product.weight_kg || '';
+            document.getElementById('prod-backlash').value = product.backlash_arcmin || '';
+            document.getElementById('prod-efficiency').value = product.efficiency_percent || '';
+            document.getElementById('prod-ratio-range').value = product.ratio_range || '';
+            document.getElementById('prod-max-input-speed').value = product.max_input_speed_rpm || '';
             document.getElementById('prod-desc-de').value = product.description_de || '';
             document.getElementById('prod-desc-en').value = product.description_en || '';
             document.getElementById('prod-applications').value = (product.applications || []).join(', ');
@@ -860,6 +899,12 @@
                 series: document.getElementById('prod-series').value.trim(),
                 rated_torque_nm: parseInt(document.getElementById('prod-rated-torque').value) || null,
                 max_torque_nm: parseInt(document.getElementById('prod-max-torque').value) || null,
+                inertia_kgcm2: parseFloat(document.getElementById('prod-inertia').value) || null,
+                weight_kg: parseFloat(document.getElementById('prod-weight').value) || null,
+                backlash_arcmin: parseFloat(document.getElementById('prod-backlash').value) || null,
+                efficiency_percent: parseFloat(document.getElementById('prod-efficiency').value) || null,
+                ratio_range: document.getElementById('prod-ratio-range').value.trim() || null,
+                max_input_speed_rpm: parseInt(document.getElementById('prod-max-input-speed').value) || null,
                 description_de: document.getElementById('prod-desc-de').value.trim(),
                 description_en: document.getElementById('prod-desc-en').value.trim(),
                 applications: document.getElementById('prod-applications').value.split(',').map(s => s.trim()).filter(Boolean),

@@ -77,7 +77,16 @@ module.exports = async function handler(req, res) {
 
         if (relevantProducts && relevantProducts.length > 0) {
           const productInfo = relevantProducts.map(p => {
-            return `- ${p.name} (${p.category}): ${p.description || ''} | Drehmoment: ${p.rated_torque_nm}-${p.max_torque_nm} Nm | Anwendungen: ${(p.applications || []).join(', ')}`;
+            let info = `- ${p.name} (${p.category}): ${p.description || ''}`;
+            info += ` | Drehmoment: ${p.rated_torque_nm}-${p.max_torque_nm} Nm`;
+            if (p.inertia_kgcm2) info += ` | Massenträgheit: ${p.inertia_kgcm2} kgcm²`;
+            if (p.weight_kg) info += ` | Gewicht: ${p.weight_kg} kg`;
+            if (p.backlash_arcmin) info += ` | Verdrehspiel: ${p.backlash_arcmin} Bogenmin.`;
+            if (p.ratio_range) info += ` | Übersetzung: ${p.ratio_range}`;
+            if (p.max_input_speed_rpm) info += ` | Max. Eingangsdrehzahl: ${p.max_input_speed_rpm} min⁻¹`;
+            if (p.efficiency_percent) info += ` | Wirkungsgrad: ${p.efficiency_percent}%`;
+            info += ` | Anwendungen: ${(p.applications || []).join(', ')}`;
+            return info;
           }).join('\n');
 
           const ragWarning = language === 'en'

@@ -126,6 +126,8 @@ async function handlePost(req, res, sql) {
         rated_torque_nm, max_torque_nm,
         description_de, description_en,
         applications, features,
+        inertia_kgcm2, weight_kg, backlash_arcmin,
+        ratio_range, max_input_speed_rpm, efficiency_percent,
         is_synced
       ) VALUES (
         ${product.id},
@@ -138,6 +140,12 @@ async function handlePost(req, res, sql) {
         ${product.description_en || null},
         ${product.applications || []},
         ${product.features || []},
+        ${product.inertia_kgcm2 || null},
+        ${product.weight_kg || null},
+        ${product.backlash_arcmin || null},
+        ${product.ratio_range || null},
+        ${product.max_input_speed_rpm || null},
+        ${product.efficiency_percent || null},
         false
       )
       ON CONFLICT (id) DO UPDATE SET
@@ -150,6 +158,12 @@ async function handlePost(req, res, sql) {
         description_en = EXCLUDED.description_en,
         applications = EXCLUDED.applications,
         features = EXCLUDED.features,
+        inertia_kgcm2 = EXCLUDED.inertia_kgcm2,
+        weight_kg = EXCLUDED.weight_kg,
+        backlash_arcmin = EXCLUDED.backlash_arcmin,
+        ratio_range = EXCLUDED.ratio_range,
+        max_input_speed_rpm = EXCLUDED.max_input_speed_rpm,
+        efficiency_percent = EXCLUDED.efficiency_percent,
         is_synced = false,
         updated_at = NOW()
     `;
@@ -185,7 +199,13 @@ async function handlePost(req, res, sql) {
       description_de: product.description_de,
       description_en: product.description_en,
       applications: product.applications || [],
-      features: product.features || []
+      features: product.features || [],
+      inertia_kgcm2: product.inertia_kgcm2,
+      weight_kg: product.weight_kg,
+      backlash_arcmin: product.backlash_arcmin,
+      ratio_range: product.ratio_range,
+      max_input_speed_rpm: product.max_input_speed_rpm,
+      efficiency_percent: product.efficiency_percent
     });
 
     // Als synchronisiert markieren
@@ -210,7 +230,13 @@ async function handlePost(req, res, sql) {
           description_de: product.description_de,
           description_en: product.description_en,
           applications: product.applications || [],
-          features: product.features || []
+          features: product.features || [],
+          inertia_kgcm2: product.inertia_kgcm2,
+          weight_kg: product.weight_kg,
+          backlash_arcmin: product.backlash_arcmin,
+          ratio_range: product.ratio_range,
+          max_input_speed_rpm: product.max_input_speed_rpm,
+          efficiency_percent: product.efficiency_percent
         });
 
         await sql`UPDATE rag_products SET is_synced = true WHERE id = ${product.id}`;
@@ -247,6 +273,8 @@ async function handlePost(req, res, sql) {
             rated_torque_nm, max_torque_nm,
             description_de, description_en,
             applications, features,
+            inertia_kgcm2, weight_kg, backlash_arcmin,
+            ratio_range, max_input_speed_rpm, efficiency_percent,
             is_synced
           ) VALUES (
             ${product.id},
@@ -259,6 +287,12 @@ async function handlePost(req, res, sql) {
             ${product.description_en || null},
             ${product.applications || []},
             ${product.features || []},
+            ${product.inertia_kgcm2 || null},
+            ${product.weight_kg || null},
+            ${product.backlash_arcmin || null},
+            ${product.ratio_range || null},
+            ${product.max_input_speed_rpm || null},
+            ${product.efficiency_percent || null},
             false
           )
           ON CONFLICT (id) DO UPDATE SET
@@ -271,6 +305,12 @@ async function handlePost(req, res, sql) {
             description_en = EXCLUDED.description_en,
             applications = EXCLUDED.applications,
             features = EXCLUDED.features,
+            inertia_kgcm2 = EXCLUDED.inertia_kgcm2,
+            weight_kg = EXCLUDED.weight_kg,
+            backlash_arcmin = EXCLUDED.backlash_arcmin,
+            ratio_range = EXCLUDED.ratio_range,
+            max_input_speed_rpm = EXCLUDED.max_input_speed_rpm,
+            efficiency_percent = EXCLUDED.efficiency_percent,
             updated_at = NOW()
         `;
         imported++;
