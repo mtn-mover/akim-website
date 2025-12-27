@@ -1115,14 +1115,24 @@
 
                     document.getElementById('search-results').innerHTML = `
                         <h4 style="margin-bottom: 0.5rem;">Ergebnisse:</h4>
-                        ${results.map((r, i) => `
+                        ${results.map((r, i) => {
+                            let techSpecs = [];
+                            if (r.rated_torque_nm) techSpecs.push(`Drehmoment: ${r.rated_torque_nm}-${r.max_torque_nm} Nm`);
+                            if (r.efficiency_percent) techSpecs.push(`Wirkungsgrad: ${r.efficiency_percent}%`);
+                            if (r.inertia_kgcm2) techSpecs.push(`Massenträgheit: ${r.inertia_kgcm2} kgcm²`);
+                            if (r.weight_kg) techSpecs.push(`Gewicht: ${r.weight_kg} kg`);
+                            if (r.backlash_arcmin) techSpecs.push(`Verdrehspiel: ${r.backlash_arcmin} Bogenmin.`);
+                            if (r.ratio_range) techSpecs.push(`Übersetzung: ${r.ratio_range}`);
+
+                            return `
                             <div style="padding: 0.75rem; background: var(--bg); border-radius: 4px; margin-bottom: 0.5rem;">
                                 <strong>${i + 1}. ${r.name}</strong>
                                 <span class="badge badge-category" style="margin-left: 0.5rem;">${r.category}</span>
                                 <span style="float: right; font-size: 0.75rem; color: var(--text-light);">Score: ${(r.score * 100).toFixed(1)}%</span>
                                 <p style="font-size: 0.875rem; margin-top: 0.25rem; color: var(--text-light);">${r.description || '-'}</p>
+                                ${techSpecs.length > 0 ? `<p style="font-size: 0.75rem; margin-top: 0.25rem; color: var(--primary);"><strong>Technische Daten:</strong> ${techSpecs.join(' | ')}</p>` : ''}
                             </div>
-                        `).join('')}
+                        `}).join('')}
                     `;
                 } else {
                     throw new Error('Search failed');
