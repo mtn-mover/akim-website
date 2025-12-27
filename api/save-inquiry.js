@@ -46,6 +46,7 @@ module.exports = async function handler(req, res) {
     const sql = neon(process.env.POSTGRES_URL);
 
     // Inquiry speichern (inkl. Tracking-Daten)
+    // ON CONFLICT: Falls session_id bereits existiert, UPDATE statt INSERT
     const result = await sql`
       INSERT INTO inquiries (
         session_id,
@@ -82,6 +83,21 @@ module.exports = async function handler(req, res) {
         'new',
         NOW()
       )
+      ON CONFLICT (session_id) DO UPDATE SET
+        customer_name = EXCLUDED.customer_name,
+        customer_email = EXCLUDED.customer_email,
+        customer_phone = EXCLUDED.customer_phone,
+        customer_company = EXCLUDED.customer_company,
+        customer_country = EXCLUDED.customer_country,
+        language = EXCLUDED.language,
+        messages = EXCLUDED.messages,
+        summary = EXCLUDED.summary,
+        technical_data = EXCLUDED.technical_data,
+        browser_language = EXCLUDED.browser_language,
+        timezone = EXCLUDED.timezone,
+        referrer = EXCLUDED.referrer,
+        form_timestamp = EXCLUDED.form_timestamp,
+        updated_at = NOW()
       RETURNING id, created_at
     `;
 
