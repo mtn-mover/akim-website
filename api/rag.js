@@ -61,18 +61,18 @@ async function upsertDocument(doc) {
   // Create embedding
   const embedding = await createEmbedding(searchText);
 
-  // Upsert to Pinecone
+  // Upsert to Pinecone - null-Werte durch 0 oder leeren String ersetzen
   await index.upsert([{
     id: doc.id,
     values: embedding,
     metadata: {
-      name: doc.name,
-      category: doc.category,
-      series: doc.series,
-      rated_torque_nm: doc.rated_torque_nm,
-      max_torque_nm: doc.max_torque_nm,
-      description_de: doc.description_de,
-      description_en: doc.description_en,
+      name: doc.name || '',
+      category: doc.category || '',
+      series: doc.series || '',
+      rated_torque_nm: doc.rated_torque_nm || 0,
+      max_torque_nm: doc.max_torque_nm || 0,
+      description_de: doc.description_de || '',
+      description_en: doc.description_en || '',
       applications: doc.applications || [],
       features: doc.features || [],
       searchText: searchText.substring(0, 1000) // Truncate for metadata limit
