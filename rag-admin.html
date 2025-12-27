@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AKIM RAG Admin - Wissensdatenbank verwalten</title>
+    <style>
+        :root {
+            --primary: #1a5f7a;
+            --primary-dark: #134b61;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --bg: #f5f5f5;
+            --card-bg: #ffffff;
+            --text: #333;
+            --text-light: #666;
+            --border: #ddd;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            padding: 1.25rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .stat-card h3 {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-card .value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-card .value.warning {
+            color: var(--warning);
+        }
+
+        .stat-card .value.success {
+            color: var(--success);
+        }
+
+        .actions-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            color: #333;
+        }
+
+        .btn-warning:hover {
+            background: #e0a800;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .search-box {
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.875rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .products-list {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .products-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .products-header h2 {
+            font-size: 1.125rem;
+        }
+
+        .products-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .products-table th,
+        .products-table td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .products-table th {
+            background: var(--bg);
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-light);
+        }
+
+        .products-table tr:hover {
+            background: #f9f9f9;
+        }
+
+        .products-table tr.selected {
+            background: #e3f2fd;
+        }
+
+        .products-table .actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-small {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .badge-category {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+
+        .badge-synced {
+            background: #e8f5e9;
+            color: #388e3c;
+        }
+
+        .badge-unsynced {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+
+        .edit-panel {
+            background: var(--card-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 2rem;
+        }
+
+        .edit-panel-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .edit-panel-header h2 {
+            font-size: 1.125rem;
+        }
+
+        .edit-panel-content {
+            padding: 1.5rem;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: 0.25rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+
+        .form-group textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .edit-panel-actions {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast.success {
+            background: var(--success);
+        }
+
+        .toast.error {
+            background: var(--danger);
+        }
+
+        .toast.info {
+            background: var(--primary);
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+            color: var(--text-light);
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: var(--card-bg);
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-header h3 {
+            font-size: 1.125rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
+        }
+
+        .modal-footer {
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+
+        .alert-info {
+            background: #e3f2fd;
+            color: #1565c0;
+        }
+
+        .alert-warning {
+            background: #fff3e0;
+            color: #e65100;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>AKIM RAG Admin</h1>
+        <div class="header-actions">
+            <span id="connection-status">Verbindung wird geprüft...</span>
+            <a href="admin.html" class="btn btn-outline">Zurück zum Admin</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Stats Bar -->
+        <div class="stats-bar">
+            <div class="stat-card">
+                <h3>Produkte in DB</h3>
+                <div class="value" id="db-count">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Synchronisiert</h3>
+                <div class="value" id="synced-count">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Nicht synchronisiert</h3>
+                <div class="value warning" id="unsynced-count">-</div>
+            </div>
+            <div class="stat-card">
+                <h3>Vektoren in Pinecone</h3>
+                <div class="value" id="vector-count">-</div>
+            </div>
+        </div>
+
+        <!-- Actions Bar -->
+        <div class="actions-bar">
+            <button class="btn btn-success" onclick="syncAllToVector()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z"/></svg>
+                Alle synchronisieren
+            </button>
+            <button class="btn btn-primary" onclick="clearForm()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                Neues Produkt
+            </button>
+            <button class="btn btn-warning" onclick="importFromJson()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                JSON importieren
+            </button>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Produkte durchsuchen..." oninput="filterProducts()">
+            </div>
+            <button class="btn btn-outline" onclick="testSearch()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                RAG-Suche testen
+            </button>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Products List -->
+            <div class="products-list">
+                <div class="products-header">
+                    <h2>Produkte</h2>
+                    <span id="products-count-label">0 Produkte</span>
+                </div>
+                <div id="products-table-container">
+                    <div class="loading">
+                        <div class="spinner"></div>
+                        Produkte werden geladen...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Edit Panel -->
+            <div class="edit-panel">
+                <div class="edit-panel-header">
+                    <h2 id="edit-panel-title">Neues Produkt</h2>
+                </div>
+                <div class="edit-panel-content">
+                    <form id="product-form">
+                        <div class="form-group">
+                            <label for="prod-id">ID *</label>
+                            <input type="text" id="prod-id" required placeholder="z.B. 2sc-212-2">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prod-name">Name *</label>
+                            <input type="text" id="prod-name" required placeholder="z.B. 2SC-212/2">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="prod-category">Kategorie</label>
+                                <select id="prod-category">
+                                    <option value="Zykloidengetriebe">Zykloidengetriebe</option>
+                                    <option value="Servogetriebe">Servogetriebe</option>
+                                    <option value="Exzentergetriebe">Exzentergetriebe</option>
+                                    <option value="Zentrifugengetriebe">Zentrifugengetriebe</option>
+                                    <option value="Planetengetriebe">Planetengetriebe</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="prod-series">Serie</label>
+                                <input type="text" id="prod-series" placeholder="z.B. 2SC">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="prod-rated-torque">Nenndrehmoment (Nm)</label>
+                                <input type="number" id="prod-rated-torque" placeholder="z.B. 50">
+                            </div>
+                            <div class="form-group">
+                                <label for="prod-max-torque">Max. Drehmoment (Nm)</label>
+                                <input type="number" id="prod-max-torque" placeholder="z.B. 100">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prod-desc-de">Beschreibung (DE)</label>
+                            <textarea id="prod-desc-de" placeholder="Deutsche Beschreibung..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prod-desc-en">Beschreibung (EN)</label>
+                            <textarea id="prod-desc-en" placeholder="English description..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prod-applications">Anwendungen (kommagetrennt)</label>
+                            <input type="text" id="prod-applications" placeholder="z.B. Servo, Robotik, Positionierung">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prod-features">Features (kommagetrennt)</label>
+                            <input type="text" id="prod-features" placeholder="z.B. spielfrei, kompakt, hochpräzise">
+                        </div>
+                    </form>
+                </div>
+                <div class="edit-panel-actions">
+                    <button class="btn btn-outline" onclick="clearForm()">Neu</button>
+                    <button class="btn btn-primary" onclick="saveProduct()">Speichern</button>
+                    <button class="btn btn-success" onclick="saveAndSync()">Speichern & Sync</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- Search Test Modal -->
+    <div class="modal-overlay" id="search-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>RAG-Suche testen</h3>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="search-query">Suchanfrage</label>
+                    <input type="text" id="search-query" placeholder="z.B. Getriebe für Roboter mit 500 Nm">
+                </div>
+                <div id="search-results" style="margin-top: 1rem;"></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('search-modal')">Schliessen</button>
+                <button class="btn btn-primary" onclick="executeSearch()">Suchen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sync Progress Modal -->
+    <div class="modal-overlay" id="sync-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Synchronisierung</h3>
+            </div>
+            <div class="modal-body">
+                <p id="sync-status">Vorbereitung...</p>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="sync-progress" style="width: 0%"></div>
+                </div>
+                <p id="sync-details" style="margin-top: 1rem; font-size: 0.875rem; color: var(--text-light);"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('sync-modal')" id="sync-close-btn" disabled>Schliessen</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Modal -->
+    <div class="modal-overlay" id="import-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Produkte importieren</h3>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    Importiert die 41 Standard-Produkte aus der JSON-Datei in die Datenbank.
+                    Bestehende Produkte werden aktualisiert.
+                </div>
+                <p id="import-status"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="closeModal('import-modal')">Abbrechen</button>
+                <button class="btn btn-warning" onclick="executeImport()" id="import-btn">Importieren</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_BASE = '/api';
+        let products = [];
+        let selectedProductId = null;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadProducts();
+            await loadStats();
+        });
+
+        // Load products from Database
+        async function loadProducts() {
+            try {
+                const response = await fetch(`${API_BASE}/rag-admin?action=products`);
+                if (response.ok) {
+                    products = await response.json();
+                    renderProducts();
+                } else {
+                    throw new Error('Failed to load products');
+                }
+            } catch (error) {
+                console.error('Load products error:', error);
+                document.getElementById('products-table-container').innerHTML = `
+                    <div class="empty-state">
+                        <p>Fehler beim Laden der Produkte</p>
+                        <p style="font-size: 0.875rem;">${error.message}</p>
+                        <button class="btn btn-warning" onclick="importFromJson()" style="margin-top: 1rem;">
+                            JSON importieren
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Load Stats
+        async function loadStats() {
+            try {
+                const response = await fetch(`${API_BASE}/rag-admin?action=stats`);
+                if (response.ok) {
+                    const stats = await response.json();
+
+                    // Database stats
+                    const dbTotal = stats.database?.totalProducts || 0;
+                    const dbSynced = stats.database?.syncedProducts || 0;
+                    const dbUnsynced = dbTotal - dbSynced;
+
+                    document.getElementById('db-count').textContent = dbTotal;
+                    document.getElementById('synced-count').textContent = dbSynced;
+                    document.getElementById('unsynced-count').textContent = dbUnsynced;
+
+                    // Pinecone stats
+                    document.getElementById('vector-count').textContent = stats.pinecone?.totalVectors || 0;
+
+                    document.getElementById('connection-status').textContent = 'Verbunden';
+                    document.getElementById('connection-status').style.color = '#28a745';
+                } else {
+                    throw new Error('Connection failed');
+                }
+            } catch (error) {
+                document.getElementById('connection-status').textContent = 'Nicht verbunden';
+                document.getElementById('connection-status').style.color = '#dc3545';
+            }
+        }
+
+        // Render products table
+        function renderProducts(filteredProducts = null) {
+            const displayProducts = filteredProducts || products;
+            document.getElementById('products-count-label').textContent = `${displayProducts.length} Produkte`;
+
+            if (displayProducts.length === 0) {
+                document.getElementById('products-table-container').innerHTML = `
+                    <div class="empty-state">
+                        <p>Keine Produkte gefunden</p>
+                        <button class="btn btn-warning" onclick="importFromJson()" style="margin-top: 1rem;">
+                            JSON importieren
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            const html = `
+                <table class="products-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Kategorie</th>
+                            <th>Drehmoment</th>
+                            <th>Status</th>
+                            <th>Aktionen</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${displayProducts.map(p => `
+                            <tr class="${selectedProductId === p.id ? 'selected' : ''}" onclick="selectProduct('${p.id}')">
+                                <td><strong>${p.name}</strong><br><code style="font-size: 0.7rem; color: #999;">${p.id}</code></td>
+                                <td><span class="badge badge-category">${p.category || '-'}</span></td>
+                                <td>${p.rated_torque_nm || '-'} / ${p.max_torque_nm || '-'} Nm</td>
+                                <td>
+                                    <span class="badge ${p.is_synced ? 'badge-synced' : 'badge-unsynced'}">
+                                        ${p.is_synced ? 'Synced' : 'Nicht synced'}
+                                    </span>
+                                </td>
+                                <td class="actions">
+                                    <button class="btn btn-small btn-outline" onclick="event.stopPropagation(); editProduct('${p.id}')">Bearbeiten</button>
+                                    <button class="btn btn-small btn-danger" onclick="event.stopPropagation(); deleteProduct('${p.id}')">Löschen</button>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('products-table-container').innerHTML = html;
+        }
+
+        // Filter products
+        function filterProducts() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            if (!query) {
+                renderProducts();
+                return;
+            }
+
+            const filtered = products.filter(p =>
+                p.id.toLowerCase().includes(query) ||
+                p.name.toLowerCase().includes(query) ||
+                (p.category && p.category.toLowerCase().includes(query)) ||
+                (p.description_de && p.description_de.toLowerCase().includes(query))
+            );
+
+            renderProducts(filtered);
+        }
+
+        // Select product
+        function selectProduct(id) {
+            selectedProductId = id;
+            editProduct(id);
+            renderProducts();
+        }
+
+        // Edit product - fill form
+        function editProduct(id) {
+            const product = products.find(p => p.id === id);
+            if (!product) return;
+
+            selectedProductId = id;
+
+            document.getElementById('prod-id').value = product.id;
+            document.getElementById('prod-name').value = product.name;
+            document.getElementById('prod-category').value = product.category || 'Zykloidengetriebe';
+            document.getElementById('prod-series').value = product.series || '';
+            document.getElementById('prod-rated-torque').value = product.rated_torque_nm || '';
+            document.getElementById('prod-max-torque').value = product.max_torque_nm || '';
+            document.getElementById('prod-desc-de').value = product.description_de || '';
+            document.getElementById('prod-desc-en').value = product.description_en || '';
+            document.getElementById('prod-applications').value = (product.applications || []).join(', ');
+            document.getElementById('prod-features').value = (product.features || []).join(', ');
+
+            document.getElementById('edit-panel-title').textContent = `Bearbeiten: ${product.name}`;
+        }
+
+        // Clear form
+        function clearForm() {
+            document.getElementById('product-form').reset();
+            selectedProductId = null;
+            document.getElementById('edit-panel-title').textContent = 'Neues Produkt';
+            renderProducts();
+        }
+
+        // Get form data
+        function getFormData() {
+            return {
+                id: document.getElementById('prod-id').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+                name: document.getElementById('prod-name').value.trim(),
+                category: document.getElementById('prod-category').value,
+                series: document.getElementById('prod-series').value.trim(),
+                rated_torque_nm: parseInt(document.getElementById('prod-rated-torque').value) || null,
+                max_torque_nm: parseInt(document.getElementById('prod-max-torque').value) || null,
+                description_de: document.getElementById('prod-desc-de').value.trim(),
+                description_en: document.getElementById('prod-desc-en').value.trim(),
+                applications: document.getElementById('prod-applications').value.split(',').map(s => s.trim()).filter(Boolean),
+                features: document.getElementById('prod-features').value.split(',').map(s => s.trim()).filter(Boolean)
+            };
+        }
+
+        // Save product to database
+        async function saveProduct() {
+            const data = getFormData();
+
+            if (!data.id || !data.name) {
+                showToast('ID und Name sind erforderlich', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/rag-admin?action=save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    showToast('Produkt gespeichert', 'success');
+                    await loadProducts();
+                    await loadStats();
+
+                    // Update selection
+                    selectedProductId = data.id;
+                    renderProducts();
+                } else {
+                    throw new Error('Save failed');
+                }
+            } catch (error) {
+                showToast('Fehler beim Speichern: ' + error.message, 'error');
+            }
+        }
+
+        // Save and sync to Pinecone
+        async function saveAndSync() {
+            const data = getFormData();
+
+            if (!data.id || !data.name) {
+                showToast('ID und Name sind erforderlich', 'error');
+                return;
+            }
+
+            try {
+                // First save
+                const saveResponse = await fetch(`${API_BASE}/rag-admin?action=save`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+
+                if (!saveResponse.ok) throw new Error('Save failed');
+
+                // Then sync
+                const syncResponse = await fetch(`${API_BASE}/rag-admin?action=sync`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: data.id })
+                });
+
+                if (syncResponse.ok) {
+                    showToast('Produkt gespeichert und synchronisiert', 'success');
+                    await loadProducts();
+                    await loadStats();
+                } else {
+                    throw new Error('Sync failed');
+                }
+            } catch (error) {
+                showToast('Fehler: ' + error.message, 'error');
+            }
+        }
+
+        // Delete product
+        async function deleteProduct(id) {
+            if (!confirm(`Produkt "${id}" wirklich löschen?`)) return;
+
+            try {
+                const response = await fetch(`${API_BASE}/rag-admin?id=${id}`, { method: 'DELETE' });
+
+                if (response.ok) {
+                    showToast('Produkt gelöscht', 'success');
+                    clearForm();
+                    await loadProducts();
+                    await loadStats();
+                } else {
+                    throw new Error('Delete failed');
+                }
+            } catch (error) {
+                showToast('Fehler beim Löschen: ' + error.message, 'error');
+            }
+        }
+
+        // Sync all to Pinecone
+        async function syncAllToVector() {
+            showModal('sync-modal');
+            const progressBar = document.getElementById('sync-progress');
+            const statusEl = document.getElementById('sync-status');
+            const detailsEl = document.getElementById('sync-details');
+            const closeBtn = document.getElementById('sync-close-btn');
+
+            closeBtn.disabled = true;
+            statusEl.textContent = `Synchronisiere ${products.length} Produkte...`;
+            progressBar.style.width = '10%';
+
+            try {
+                const response = await fetch(`${API_BASE}/rag-admin?action=bulk`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+
+                progressBar.style.width = '100%';
+
+                if (response.ok) {
+                    const result = await response.json();
+                    statusEl.textContent = result.message;
+
+                    const failed = result.results?.filter(r => !r.success) || [];
+                    if (failed.length > 0) {
+                        detailsEl.innerHTML = `<strong>Fehler:</strong><br>${failed.map(f => `${f.id}: ${f.error}`).join('<br>')}`;
+                    } else {
+                        detailsEl.textContent = 'Alle Produkte erfolgreich synchronisiert!';
+                    }
+
+                    await loadProducts();
+                    await loadStats();
+                } else {
+                    throw new Error('Sync failed');
+                }
+            } catch (error) {
+                statusEl.textContent = 'Fehler bei der Synchronisierung';
+                detailsEl.textContent = error.message;
+            }
+
+            closeBtn.disabled = false;
+        }
+
+        // Import from JSON
+        function importFromJson() {
+            document.getElementById('import-status').textContent = '';
+            showModal('import-modal');
+        }
+
+        async function executeImport() {
+            const btn = document.getElementById('import-btn');
+            const status = document.getElementById('import-status');
+
+            btn.disabled = true;
+            status.textContent = 'Importiere...';
+
+            try {
+                const response = await fetch(`${API_BASE}/rag-admin?action=import`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    status.textContent = result.message;
+                    showToast(result.message, 'success');
+
+                    await loadProducts();
+                    await loadStats();
+
+                    setTimeout(() => closeModal('import-modal'), 2000);
+                } else {
+                    throw new Error('Import failed');
+                }
+            } catch (error) {
+                status.textContent = 'Fehler: ' + error.message;
+                showToast('Import fehlgeschlagen', 'error');
+            }
+
+            btn.disabled = false;
+        }
+
+        // Test search
+        function testSearch() {
+            showModal('search-modal');
+            document.getElementById('search-results').innerHTML = '';
+        }
+
+        async function executeSearch() {
+            const query = document.getElementById('search-query').value;
+            if (!query) {
+                showToast('Bitte Suchanfrage eingeben', 'error');
+                return;
+            }
+
+            document.getElementById('search-results').innerHTML = '<div class="loading"><div class="spinner"></div>Suche...</div>';
+
+            try {
+                const response = await fetch(`${API_BASE}/rag-admin?action=search&query=${encodeURIComponent(query)}&topK=5`);
+
+                if (response.ok) {
+                    const results = await response.json();
+
+                    if (results.length === 0) {
+                        document.getElementById('search-results').innerHTML = '<p>Keine Ergebnisse gefunden. Wurden die Produkte zu Pinecone synchronisiert?</p>';
+                        return;
+                    }
+
+                    document.getElementById('search-results').innerHTML = `
+                        <h4 style="margin-bottom: 0.5rem;">Ergebnisse:</h4>
+                        ${results.map((r, i) => `
+                            <div style="padding: 0.75rem; background: var(--bg); border-radius: 4px; margin-bottom: 0.5rem;">
+                                <strong>${i + 1}. ${r.name}</strong>
+                                <span class="badge badge-category" style="margin-left: 0.5rem;">${r.category}</span>
+                                <span style="float: right; font-size: 0.75rem; color: var(--text-light);">Score: ${(r.score * 100).toFixed(1)}%</span>
+                                <p style="font-size: 0.875rem; margin-top: 0.25rem; color: var(--text-light);">${r.description || '-'}</p>
+                            </div>
+                        `).join('')}
+                    `;
+                } else {
+                    throw new Error('Search failed');
+                }
+            } catch (error) {
+                document.getElementById('search-results').innerHTML = `<p style="color: var(--danger);">Fehler: ${error.message}</p>`;
+            }
+        }
+
+        // Modal helpers
+        function showModal(id) {
+            document.getElementById(id).classList.add('show');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('show');
+        }
+
+        // Toast notification
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type} show`;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

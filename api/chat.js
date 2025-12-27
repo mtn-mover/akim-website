@@ -1,7 +1,9 @@
 // AKIM Chatbot API - Vercel Serverless Function
 // Verwendet Claude API für intelligente Gesprächsführung
+// Mit RAG-Integration für Produktwissen
 
 const { AKIM_SYSTEM_PROMPT, detectLanguage } = require('./system-prompt');
+const rag = require('./rag');
 
 // CORS Headers für die Response
 const corsHeaders = {
@@ -63,6 +65,31 @@ module.exports = async function handler(req, res) {
     if (leadData) {
       const leadInfo = buildLeadContext(leadData, language);
       systemPrompt = systemPrompt + '\n\n' + leadInfo;
+    }
+
+    // RAG: Relevante Produktinformationen abrufen
+    const lastUserMessage = [...messages].reverse().find(m => m.role === 'user');
+    let ragContext = '';
+
+    if (lastUserMessage && process.env.PINECONE_API_KEY && process.env.OPENAI_API_KEY) {
+      try {
+        const relevantProducts = await rag.searchDocuments(lastUserMessage.content, 3, language);
+
+        if (relevantProducts && relevantProducts.length > 0) {
+          const productInfo = relevantProducts.map(p => {
+            return `- ${p.name} (${p.category}): ${p.description || ''} | Drehmoment: ${p.rated_torque_nm}-${p.max_torque_nm} Nm | Anwendungen: ${(p.applications || []).join(', ')}`;
+          }).join('\n');
+
+          ragContext = language === 'en'
+            ? `\n\nRELEVANT PRODUCTS FROM DATABASE (use this information to recommend products):\n${productInfo}`
+            : `\n\nRELEVANTE PRODUKTE AUS DATENBANK (nutze diese Informationen für Empfehlungen):\n${productInfo}`;
+
+          systemPrompt += ragContext;
+        }
+      } catch (ragError) {
+        console.error('RAG search error (continuing without RAG):', ragError.message);
+        // Continue without RAG if it fails
+      }
     }
 
     // Claude API aufrufen
