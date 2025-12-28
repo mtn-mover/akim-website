@@ -2,12 +2,40 @@
 // Lädt Anfragen aus der Datenbank für die Admin-Ansicht
 
 const { neon } = require('@neondatabase/serverless');
+const crypto = require('crypto');
+
+// Session-Token validieren (gleiche Logik wie in auth.js)
+function validateSessionToken(token, secret) {
+  try {
+    const decoded = JSON.parse(Buffer.from(token, 'base64').toString());
+    const { data, exp, sig } = decoded;
+
+    if (Date.now() > exp) {
+      return { valid: false, error: 'Token expired' };
+    }
+
+    const expectedSig = crypto
+      .createHmac('sha256', secret)
+      .update(data)
+      .digest('hex');
+
+    if (sig !== expectedSig) {
+      return { valid: false, error: 'Invalid signature' };
+    }
+
+    return { valid: true };
+  } catch (e) {
+    return { valid: false, error: 'Invalid token format' };
+  }
+}
 
 module.exports = async function handler(req, res) {
   // CORS Headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://chat.akim.ch';
+  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
   res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader('Access-Control-Allow-Credentials', 'true');
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -19,12 +47,19 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  // Einfache Auth-Prüfung (kann später durch bessere Auth ersetzt werden)
+  // Session-Token Authentifizierung
   const authHeader = req.headers.authorization;
-  const expectedKey = process.env.ADMIN_API_KEY;
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    res.status(401).json({ error: 'No token provided' });
+    return;
+  }
 
-  if (!expectedKey || authHeader !== `Bearer ${expectedKey}`) {
-    res.status(401).json({ error: 'Unauthorized' });
+  const token = authHeader.substring(7);
+  const secret = process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_PASSWORD || 'fallback-secret';
+  const validation = validateSessionToken(token, secret);
+
+  if (!validation.valid) {
+    res.status(401).json({ error: 'Unauthorized', reason: validation.error });
     return;
   }
 
