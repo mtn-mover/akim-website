@@ -120,6 +120,7 @@
                     </button>
 
                     <p class="form-note">* Pflichtfelder. Ihre Daten werden vertraulich behandelt.</p>
+                    <p class="recaptcha-notice">Diese Seite ist durch reCAPTCHA geschützt. Es gelten die <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Datenschutzrichtlinien</a> und <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Nutzungsbedingungen</a> von Google.</p>
                 </form>
             </div>
         </div>
@@ -229,21 +230,38 @@
 
                 // Button deaktivieren während reCAPTCHA läuft
                 submitButton.disabled = true;
+                var originalButtonText = submitButton.querySelector('span').textContent;
+                submitButton.querySelector('span').textContent = 'Wird geprüft...';
 
                 try {
                     // reCAPTCHA v3 Token generieren
                     var recaptchaToken = await grecaptcha.execute('6LfhNjksAAAAAJevQPqzjhTGf2SLumVwQpMt83fU', { action: 'start_chat' });
 
-                    // Basis-Daten sammeln
+                    // Token sofort beim Backend verifizieren
+                    var verifyResponse = await fetch('/api/verify-recaptcha', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ token: recaptchaToken })
+                    });
+
+                    var verifyResult = await verifyResponse.json();
+
+                    if (!verifyResult.success) {
+                        // Bot erkannt - still fehlschlagen (keine Fehlermeldung)
+                        console.log('reCAPTCHA verification failed');
+                        submitButton.disabled = false;
+                        submitButton.querySelector('span').textContent = originalButtonText;
+                        return;
+                    }
+
+                    // reCAPTCHA erfolgreich - Chat öffnen
                     var formData = {
                         firstName: document.getElementById('firstName').value,
                         email: emailInput.value,
-                        // Hintergrund-Daten automatisch erfassen
                         browserLanguage: navigator.language || navigator.userLanguage,
                         timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                         referrer: document.referrer || 'direct',
-                        timestamp: new Date().toISOString(),
-                        recaptchaToken: recaptchaToken
+                        timestamp: new Date().toISOString()
                     };
 
                     // Im localStorage speichern für Chatbot
@@ -253,7 +271,6 @@
                     if (window.akimChatbot) {
                         window.akimChatbot.openWithLead(formData);
                     } else {
-                        // Fallback: Event dispatchen
                         window.dispatchEvent(new CustomEvent('akim-open-chat', { detail: formData }));
                     }
                 } catch (error) {
@@ -275,6 +292,7 @@
                     }
                 } finally {
                     submitButton.disabled = false;
+                    submitButton.querySelector('span').textContent = originalButtonText;
                 }
             });
 
@@ -295,6 +313,6 @@
     </script>
 
     <!-- AKIM Chatbot Widget -->
-    <script src="js/chatbot.js?v=2.1"></script>
+    <script src="js/chatbot.js?v=2.2"></script>
 </body>
 </html>

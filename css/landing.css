@@ -329,6 +329,23 @@ body {
     margin-top: 15px;
 }
 
+.recaptcha-notice {
+    font-size: 0.7rem;
+    color: #a0a8b3;
+    text-align: center;
+    margin-top: 10px;
+    line-height: 1.4;
+}
+
+.recaptcha-notice a {
+    color: #8c939d;
+    text-decoration: underline;
+}
+
+.recaptcha-notice a:hover {
+    color: #D35F00;
+}
+
 /* Products Preview */
 .products-preview {
     padding: 80px 20px;
