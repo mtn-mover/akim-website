@@ -192,8 +192,12 @@ module.exports = async function handler(req, res) {
           }).join('\n');
 
           const ragWarning = language === 'en'
-            ? `\n\nWARNING: ONLY use the product data provided below. NEVER invent or guess technical specifications (weight, inertia, backlash, dimensions, etc.) that are not listed here. If a customer asks for details not in the database, say: "For detailed technical specifications, our specialists will provide you with the complete data sheet."`
-            : `\n\nWICHTIG: Verwende AUSSCHLIESSLICH die unten aufgeführten Produktdaten. ERFINDE NIEMALS technische Spezifikationen (Gewicht, Massenträgheit, Verdrehspiel, Abmessungen, etc.) die nicht aufgeführt sind. Falls ein Kunde nach Details fragt die nicht in der Datenbank sind, sage: "Für detaillierte technische Spezifikationen stellen unsere Spezialisten Ihnen das vollständige Datenblatt zur Verfügung."`;
+            ? `\n\nWARNING: ONLY use the product data provided below. NEVER invent or guess technical specifications (weight, inertia, backlash, dimensions, etc.) that are not listed here. If a customer asks for details not in the database, say: "For detailed technical specifications, our specialists will provide you with the complete data sheet."
+
+CRITICAL TORQUE RULE: When the customer specifies a torque requirement, you MUST ONLY recommend products where the RATED TORQUE (Nenndrehmoment) is GREATER THAN OR EQUAL TO the customer's requirement. The rated torque is the FIRST number in "Drehmoment: X-Y Nm". NEVER recommend a product whose rated torque is lower than what the customer needs! For example: Customer needs 5000 Nm → ONLY recommend products with rated torque >= 5000 Nm (e.g., ZG-3500 with 6500 Nm, NOT ZG-2600 with 2600 Nm).`
+            : `\n\nWICHTIG: Verwende AUSSCHLIESSLICH die unten aufgeführten Produktdaten. ERFINDE NIEMALS technische Spezifikationen (Gewicht, Massenträgheit, Verdrehspiel, Abmessungen, etc.) die nicht aufgeführt sind. Falls ein Kunde nach Details fragt die nicht in der Datenbank sind, sage: "Für detaillierte technische Spezifikationen stellen unsere Spezialisten Ihnen das vollständige Datenblatt zur Verfügung."
+
+KRITISCHE DREHMOMENT-REGEL: Wenn der Kunde eine Drehmomentanforderung nennt, darfst du NUR Produkte empfehlen, deren NENNDREHMOMENT GRÖSSER ODER GLEICH der Kundenanforderung ist. Das Nenndrehmoment ist die ERSTE Zahl in "Drehmoment: X-Y Nm". NIEMALS ein Produkt empfehlen dessen Nenndrehmoment unter der Kundenanforderung liegt! Beispiel: Kunde braucht 5000 Nm → NUR Produkte mit Nenndrehmoment >= 5000 Nm empfehlen (z.B. ZG-3500 mit 6500 Nm, NICHT ZG-2600 mit 2600 Nm).`;
 
           ragContext = language === 'en'
             ? `${ragWarning}\n\nRELEVANT PRODUCTS FROM DATABASE:\n${productInfo}`

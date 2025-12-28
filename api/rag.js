@@ -123,23 +123,48 @@ async function deleteDocument(docId) {
   return { success: true, id: docId };
 }
 
+// Extract torque requirement from query (if mentioned)
+function extractTorqueRequirement(query) {
+  // Match patterns like "5000 Nm", "5000nm", "5.000 Nm", "mindestens 5000", etc.
+  const patterns = [
+    /(?:mindestens|minimum|min\.?|at least|>=?)\s*(\d+(?:[.,]\d+)?)\s*(?:nm|newtonmeter)/i,
+    /(\d+(?:[.,]\d+)?)\s*(?:nm|newtonmeter)/i,
+    /(?:brauche|benötige|need|require)\s*(\d+(?:[.,]\d+)?)\s*(?:nm)?/i
+  ];
+
+  for (const pattern of patterns) {
+    const match = query.match(pattern);
+    if (match) {
+      // Parse number, handling both . and , as thousand separators or decimal points
+      let numStr = match[1].replace(/[.,](?=\d{3})/g, ''); // Remove thousand separators
+      numStr = numStr.replace(',', '.'); // Handle decimal comma
+      return parseFloat(numStr);
+    }
+  }
+  return null;
+}
+
 // Search for similar documents
 async function searchDocuments(query, topK = 5, language = 'de') {
   const { pinecone } = initClients();
   const index = pinecone.index(process.env.PINECONE_INDEX);
 
+  // Extract torque requirement from query
+  const requiredTorque = extractTorqueRequirement(query);
+
   // Create embedding for query
   const queryEmbedding = await createEmbedding(query);
 
-  // Search in Pinecone
+  // Search in Pinecone - get more results if we need to filter by torque
+  const searchTopK = requiredTorque ? topK * 3 : topK;
   const results = await index.query({
     vector: queryEmbedding,
-    topK: topK,
+    topK: searchTopK,
     includeMetadata: true
   });
 
-  // Format results
-  return results.matches.map(match => ({
+  // Format and filter results
+  let formattedResults = results.matches.map(match => ({
     id: match.id,
     score: match.score,
     name: match.metadata.name,
@@ -157,6 +182,15 @@ async function searchDocuments(query, topK = 5, language = 'de') {
     max_input_speed_rpm: match.metadata.max_input_speed_rpm,
     efficiency_percent: match.metadata.efficiency_percent
   }));
+
+  // Filter by torque requirement if specified
+  if (requiredTorque) {
+    formattedResults = formattedResults.filter(p => p.rated_torque_nm >= requiredTorque);
+    console.log(`Torque filter: ${requiredTorque} Nm, ${formattedResults.length} products match`);
+  }
+
+  // Return top K results (after filtering)
+  return formattedResults.slice(0, topK);
 }
 
 // Get all documents from Pinecone (list IDs)
