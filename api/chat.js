@@ -11,6 +11,35 @@ const rateLimitMap = new Map();
 const RATE_LIMIT_WINDOW = 60000; // 1 Minute
 const RATE_LIMIT_MAX = 20; // Max 20 Anfragen pro Minute pro IP
 
+// reCAPTCHA v3 Token verifizieren
+async function verifyRecaptcha(token) {
+  if (!token) return { success: false, score: 0 };
+
+  const secretKey = process.env.RECAPTCHA_SECRET_KEY;
+  if (!secretKey) {
+    console.warn('RECAPTCHA_SECRET_KEY not configured, skipping verification');
+    return { success: true, score: 1 }; // Skip if not configured
+  }
+
+  try {
+    const response = await fetch('https://www.google.com/recaptcha/api/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: `secret=${secretKey}&response=${token}`
+    });
+
+    const data = await response.json();
+    return {
+      success: data.success,
+      score: data.score || 0,
+      action: data.action
+    };
+  } catch (error) {
+    console.error('reCAPTCHA verification error:', error);
+    return { success: false, score: 0 };
+  }
+}
+
 // Rate Limit prüfen
 function checkRateLimit(ip) {
   const now = Date.now();
@@ -74,7 +103,7 @@ module.exports = async function handler(req, res) {
   }
 
   try {
-    const { messages, sessionId, leadData, language: clientLanguage, _honeypot } = req.body;
+    const { messages, sessionId, leadData, language: clientLanguage, _honeypot, recaptchaToken } = req.body;
 
     // Honeypot-Check: Wenn das versteckte Feld ausgefüllt ist, ist es ein Bot
     if (_honeypot) {
@@ -84,6 +113,21 @@ module.exports = async function handler(req, res) {
         sessionId: 'blocked'
       });
       return;
+    }
+
+    // reCAPTCHA v3 Verifikation (nur bei erster Nachricht / Chat-Start)
+    if (recaptchaToken) {
+      const recaptchaResult = await verifyRecaptcha(recaptchaToken);
+
+      if (!recaptchaResult.success || recaptchaResult.score < 0.3) {
+        // Score unter 0.3 = sehr wahrscheinlich Bot
+        console.log(`reCAPTCHA blocked: success=${recaptchaResult.success}, score=${recaptchaResult.score}`);
+        res.status(200).json({
+          message: 'Thank you for your message.',
+          sessionId: 'blocked'
+        });
+        return;
+      }
     }
 
     if (!messages || !Array.isArray(messages)) {

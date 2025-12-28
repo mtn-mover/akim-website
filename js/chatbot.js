@@ -364,18 +364,28 @@
     showTyping();
 
     try {
+      // reCAPTCHA-Token nur bei erster Nachricht mitsenden
+      const requestBody = {
+        messages: state.messages.map(m => ({
+          role: m.role,
+          content: m.content
+        })),
+        sessionId: state.sessionId,
+        leadData: state.leadData,
+        language: state.language
+      };
+
+      // reCAPTCHA-Token bei erster Nachricht mitsenden und danach entfernen
+      if (state.leadData?.recaptchaToken) {
+        requestBody.recaptchaToken = state.leadData.recaptchaToken;
+        // Token nach einmaligem Senden entfernen (ist nur einmal gültig)
+        delete state.leadData.recaptchaToken;
+      }
+
       const response = await fetch(CONFIG.apiEndpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: state.messages.map(m => ({
-            role: m.role,
-            content: m.content
-          })),
-          sessionId: state.sessionId,
-          leadData: state.leadData,
-          language: state.language
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (!response.ok) throw new Error('API error');

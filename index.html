@@ -27,6 +27,9 @@
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="css/landing.css">
     <link rel="stylesheet" href="css/chatbot.css">
+
+    <!-- reCAPTCHA v3 -->
+    <script src="https://www.google.com/recaptcha/api.js?render=6LfhNjksAAAAAJevQPqzjhTGf2SLumVwQpMt83fU"></script>
 </head>
 <body>
     <!-- Hero Section -->
@@ -203,7 +206,9 @@
 
             // Lead Form Handler
             var leadForm = document.getElementById('lead-form');
-            leadForm.addEventListener('submit', function(e) {
+            var submitButton = leadForm.querySelector('.submit-button');
+
+            leadForm.addEventListener('submit', async function(e) {
                 e.preventDefault();
 
                 // E-Mail validieren
@@ -222,26 +227,54 @@
                     return;
                 }
 
-                // Basis-Daten sammeln
-                var formData = {
-                    firstName: document.getElementById('firstName').value,
-                    email: emailInput.value,
-                    // Hintergrund-Daten automatisch erfassen
-                    browserLanguage: navigator.language || navigator.userLanguage,
-                    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-                    referrer: document.referrer || 'direct',
-                    timestamp: new Date().toISOString()
-                };
+                // Button deaktivieren während reCAPTCHA läuft
+                submitButton.disabled = true;
 
-                // Im localStorage speichern für Chatbot
-                localStorage.setItem('akim_lead', JSON.stringify(formData));
+                try {
+                    // reCAPTCHA v3 Token generieren
+                    var recaptchaToken = await grecaptcha.execute('6LfhNjksAAAAAJevQPqzjhTGf2SLumVwQpMt83fU', { action: 'start_chat' });
 
-                // Chatbot öffnen
-                if (window.akimChatbot) {
-                    window.akimChatbot.openWithLead(formData);
-                } else {
-                    // Fallback: Event dispatchen
-                    window.dispatchEvent(new CustomEvent('akim-open-chat', { detail: formData }));
+                    // Basis-Daten sammeln
+                    var formData = {
+                        firstName: document.getElementById('firstName').value,
+                        email: emailInput.value,
+                        // Hintergrund-Daten automatisch erfassen
+                        browserLanguage: navigator.language || navigator.userLanguage,
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        referrer: document.referrer || 'direct',
+                        timestamp: new Date().toISOString(),
+                        recaptchaToken: recaptchaToken
+                    };
+
+                    // Im localStorage speichern für Chatbot
+                    localStorage.setItem('akim_lead', JSON.stringify(formData));
+
+                    // Chatbot öffnen
+                    if (window.akimChatbot) {
+                        window.akimChatbot.openWithLead(formData);
+                    } else {
+                        // Fallback: Event dispatchen
+                        window.dispatchEvent(new CustomEvent('akim-open-chat', { detail: formData }));
+                    }
+                } catch (error) {
+                    console.error('reCAPTCHA error:', error);
+                    // Bei Fehler trotzdem fortfahren (bessere UX)
+                    var formData = {
+                        firstName: document.getElementById('firstName').value,
+                        email: emailInput.value,
+                        browserLanguage: navigator.language || navigator.userLanguage,
+                        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                        referrer: document.referrer || 'direct',
+                        timestamp: new Date().toISOString()
+                    };
+                    localStorage.setItem('akim_lead', JSON.stringify(formData));
+                    if (window.akimChatbot) {
+                        window.akimChatbot.openWithLead(formData);
+                    } else {
+                        window.dispatchEvent(new CustomEvent('akim-open-chat', { detail: formData }));
+                    }
+                } finally {
+                    submitButton.disabled = false;
                 }
             });
 
