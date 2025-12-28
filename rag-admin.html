@@ -252,6 +252,35 @@
             color: var(--text-light);
         }
 
+        .products-table th.sortable {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            padding-right: 1.5rem;
+        }
+
+        .products-table th.sortable:hover {
+            background: #e8e8e8;
+        }
+
+        .products-table th.sortable::after {
+            content: '⇅';
+            position: absolute;
+            right: 0.5rem;
+            opacity: 0.3;
+            font-size: 0.7rem;
+        }
+
+        .products-table th.sortable.asc::after {
+            content: '↑';
+            opacity: 1;
+        }
+
+        .products-table th.sortable.desc::after {
+            content: '↓';
+            opacity: 1;
+        }
+
         .products-table tr:hover {
             background: #f9f9f9;
         }
@@ -807,6 +836,7 @@
         const authToken = localStorage.getItem('akim_admin_token') || '';
         let products = [];
         let selectedProductId = null;
+        let currentSort = { field: null, direction: 'asc' };
 
         // Logout-Funktion
         function logout() {
@@ -907,10 +937,10 @@
                 <table class="products-table">
                     <thead>
                         <tr>
-                            <th>Name</th>
-                            <th>Kategorie</th>
-                            <th>Drehmoment</th>
-                            <th>Status</th>
+                            <th class="sortable ${currentSort.field === 'name' ? currentSort.direction : ''}" onclick="sortProducts('name')">Name</th>
+                            <th class="sortable ${currentSort.field === 'category' ? currentSort.direction : ''}" onclick="sortProducts('category')">Kategorie</th>
+                            <th class="sortable ${currentSort.field === 'rated_torque_nm' ? currentSort.direction : ''}" onclick="sortProducts('rated_torque_nm')">Drehmoment</th>
+                            <th class="sortable ${currentSort.field === 'is_synced' ? currentSort.direction : ''}" onclick="sortProducts('is_synced')">Status</th>
                             <th>Aktionen</th>
                         </tr>
                     </thead>
@@ -954,6 +984,49 @@
             );
 
             renderProducts(filtered);
+        }
+
+        // Sort products
+        function sortProducts(field) {
+            // Toggle direction if same field, otherwise reset to ascending
+            if (currentSort.field === field) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.field = field;
+                currentSort.direction = 'asc';
+            }
+
+            // Sort the products array
+            products.sort((a, b) => {
+                let valA = a[field];
+                let valB = b[field];
+
+                // Handle null/undefined values
+                if (valA === null || valA === undefined) valA = '';
+                if (valB === null || valB === undefined) valB = '';
+
+                // Handle boolean (is_synced)
+                if (typeof valA === 'boolean') {
+                    valA = valA ? 1 : 0;
+                    valB = valB ? 1 : 0;
+                }
+
+                // Handle numbers
+                if (typeof valA === 'number' && typeof valB === 'number') {
+                    return currentSort.direction === 'asc' ? valA - valB : valB - valA;
+                }
+
+                // Handle strings (case-insensitive)
+                valA = String(valA).toLowerCase();
+                valB = String(valB).toLowerCase();
+
+                if (valA < valB) return currentSort.direction === 'asc' ? -1 : 1;
+                if (valA > valB) return currentSort.direction === 'asc' ? 1 : -1;
+                return 0;
+            });
+
+            // Re-render with applied search filter if any
+            filterProducts();
         }
 
         // Select product
