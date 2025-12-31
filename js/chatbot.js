@@ -8,9 +8,9 @@
 
   // Konfiguration
   const CONFIG = {
-    apiEndpoint: '/api/chat',
-    sendEndpoint: '/api/send-inquiry',
-    saveEndpoint: '/api/save-inquiry',
+    apiEndpoint: 'https://chat.akim.ch/api/chat',
+    sendEndpoint: 'https://chat.akim.ch/api/send-inquiry',
+    saveEndpoint: 'https://chat.akim.ch/api/save-inquiry',
     maxMessages: 50,
     typingDelay: 500,
     requireLeadForm: true  // Chatbot erst nach Formular öffnen
@@ -160,7 +160,7 @@
       <div class="akim-chat-window" style="display: none;">
         <div class="akim-chat-header">
           <div class="akim-chat-header-info">
-            <img src="assets/images/Akim_Signet_2014_email.jpg" alt="AKIM" class="akim-chat-logo">
+            <img src="https://chat.akim.ch/assets/images/Akim_Signet_2014_email.jpg" alt="AKIM" class="akim-chat-logo">
             <div>
               <h3>${t('title')}</h3>
               <p>${t('subtitle')}</p>

@@ -1,16 +1,13 @@
 // AKIM Generate Summary API - Vercel Serverless Function
 // Generiert eine Zusammenfassung der Chat-Konversation
 
-module.exports = async function handler(req, res) {
-  // CORS Headers
-  const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://chat.akim.ch';
-  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+const { setCorsHeaders, handlePreflight } = require('./cors');
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
+module.exports = async function handler(req, res) {
+  // CORS Headers (erlaubt chat.akim.ch und akim.ch)
+  setCorsHeaders(req, res);
+
+  if (handlePreflight(req, res)) {
     return;
   }
 

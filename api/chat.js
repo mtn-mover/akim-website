@@ -4,6 +4,7 @@
 
 const { AKIM_SYSTEM_PROMPT, detectLanguage } = require('./system-prompt');
 const rag = require('./rag');
+const { setCorsHeaders, handlePreflight } = require('./cors');
 
 // In-Memory Rate Limiting (wird bei Serverless-Funktionen pro Instance zurückgesetzt)
 // Für Produktion: Redis oder Vercel KV empfohlen
@@ -69,16 +70,11 @@ function checkRateLimit(ip) {
 }
 
 module.exports = async function handler(req, res) {
-  // CORS Headers
-  const allowedOrigin = process.env.ALLOWED_ORIGIN || 'https://chat.akim.ch';
-  res.setHeader('Access-Control-Allow-Origin', allowedOrigin);
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+  // CORS Headers (erlaubt chat.akim.ch und akim.ch)
+  setCorsHeaders(req, res);
 
   // Handle CORS preflight
-  if (req.method === 'OPTIONS') {
-    res.status(200).json({ message: 'OK' });
+  if (handlePreflight(req, res)) {
     return;
   }
 

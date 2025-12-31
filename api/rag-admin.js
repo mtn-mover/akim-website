@@ -47,15 +47,13 @@ function validateSessionToken(token, secret) {
   }
 }
 
-module.exports = async function handler(req, res) {
-  // CORS Headers
-  res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || 'https://chat.akim.ch');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
+const { setCorsHeaders, handlePreflight } = require('./cors');
 
-  if (req.method === 'OPTIONS') {
-    res.status(200).end();
+module.exports = async function handler(req, res) {
+  // CORS Headers (erlaubt chat.akim.ch und akim.ch)
+  setCorsHeaders(req, res);
+
+  if (handlePreflight(req, res)) {
     return;
   }
 
