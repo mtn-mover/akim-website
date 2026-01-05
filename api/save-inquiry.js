@@ -124,8 +124,8 @@ module.exports = async function handler(req, res) {
 
 // Sendet E-Mail-Benachrichtigung an Sales
 async function sendTechnicianNotification({ inquiryId, customerName, customerEmail, customerCompany, summary }) {
-  // Sales E-Mail - Standard: sales@akim.ch, kann via ENV überschrieben werden
-  const notificationEmail = process.env.NOTIFICATION_EMAIL || 'sales@akim.ch';
+  // Sales E-Mail - Standard: help@akim.ch, kann via ENV überschrieben werden
+  const notificationEmail = process.env.NOTIFICATION_EMAIL || 'help@akim.ch';
 
   if (!notificationEmail) {
     console.log('NOTIFICATION_EMAIL not configured, skipping notification');
