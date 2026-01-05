@@ -64,6 +64,9 @@ module.exports = async function handler(req, res) {
         return;
       }
 
+      // Bestätigungs-E-Mail an den Kunden senden
+      await sendCustomerConfirmation(resendApiKey, inquiry, language);
+
       res.status(200).json({
         success: true,
         method: 'email',
@@ -242,6 +245,176 @@ Gesprächsverlauf ist angehängt.
 `;
 
   return { text, html };
+}
+
+// Bestätigungs-E-Mail an den Kunden senden
+async function sendCustomerConfirmation(apiKey, inquiry, language) {
+  const lang = (language || 'de').toLowerCase();
+  const content = getConfirmationContent(inquiry, lang);
+
+  try {
+    const response = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        from: 'AKIM AG <info@akim.ch>',
+        to: [inquiry.email],
+        subject: content.subject,
+        html: content.html,
+        text: content.text
+      })
+    });
+
+    if (!response.ok) {
+      console.error('Customer confirmation email failed:', await response.text());
+    }
+  } catch (error) {
+    console.error('Customer confirmation error:', error);
+  }
+}
+
+// Mehrsprachiger Inhalt für die Bestätigungs-E-Mail
+function getConfirmationContent(inquiry, lang) {
+  const customerName = inquiry.name || inquiry.company || '';
+
+  const translations = {
+    de: {
+      subject: 'Vielen Dank für Ihre Anfrage - AKIM AG',
+      greeting: customerName ? `Guten Tag ${customerName}` : 'Guten Tag',
+      thanks: 'Vielen Dank für Ihre Anfrage über unseren Chatbot. Wir haben Ihre Informationen erhalten und freuen uns über Ihr Interesse an unseren Getriebe-Lösungen.',
+      saved: 'Ihre Anfrage wurde erfolgreich gespeichert und unser Verkaufsteam wurde informiert.',
+      nextSteps: 'Nächste Schritte',
+      nextStepsText: 'Einer unserer Spezialisten wird Ihre Anfrage prüfen und sich schnellstmöglich bei Ihnen melden. Bei dringenden Anliegen erreichen Sie uns auch telefonisch.',
+      contact: 'Kontakt',
+      phone: 'Telefon',
+      email: 'E-Mail',
+      closing: 'Freundliche Grüsse',
+      team: 'Ihr AKIM Team'
+    },
+    en: {
+      subject: 'Thank you for your inquiry - AKIM AG',
+      greeting: customerName ? `Dear ${customerName}` : 'Dear Sir or Madam',
+      thanks: 'Thank you for your inquiry via our chatbot. We have received your information and appreciate your interest in our gear solutions.',
+      saved: 'Your inquiry has been successfully saved and our sales team has been notified.',
+      nextSteps: 'Next Steps',
+      nextStepsText: 'One of our specialists will review your inquiry and get back to you as soon as possible. For urgent matters, you can also reach us by phone.',
+      contact: 'Contact',
+      phone: 'Phone',
+      email: 'Email',
+      closing: 'Best regards',
+      team: 'Your AKIM Team'
+    },
+    fr: {
+      subject: 'Merci pour votre demande - AKIM AG',
+      greeting: customerName ? `Bonjour ${customerName}` : 'Bonjour',
+      thanks: 'Merci pour votre demande via notre chatbot. Nous avons bien reçu vos informations et vous remercions de votre intérêt pour nos solutions d\'engrenages.',
+      saved: 'Votre demande a été enregistrée avec succès et notre équipe commerciale a été informée.',
+      nextSteps: 'Prochaines étapes',
+      nextStepsText: 'Un de nos spécialistes examinera votre demande et vous contactera dans les plus brefs délais. Pour les questions urgentes, vous pouvez également nous joindre par téléphone.',
+      contact: 'Contact',
+      phone: 'Téléphone',
+      email: 'E-mail',
+      closing: 'Meilleures salutations',
+      team: 'Votre équipe AKIM'
+    }
+  };
+
+  const t = translations[lang] || translations.de;
+
+  const text = `
+${t.greeting},
+
+${t.thanks}
+
+${t.saved}
+
+${t.nextSteps}
+${t.nextStepsText}
+
+${t.contact}:
+${t.phone}: +41 52 644 06 46
+${t.email}: help@akim.ch
+Web: www.akim.ch
+
+${t.closing},
+${t.team}
+
+--
+AKIM AG
+Industriestrasse 11
+CH-8604 Volketswil
+www.akim.ch
+`;
+
+  const html = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; }
+    .container { max-width: 600px; margin: 0 auto; }
+    .header { background: #3D4771; color: white; padding: 30px; text-align: center; }
+    .header img { max-width: 150px; margin-bottom: 10px; }
+    .header h1 { margin: 0; font-size: 22px; font-weight: normal; }
+    .content { padding: 30px; background: #ffffff; }
+    .greeting { font-size: 18px; margin-bottom: 20px; }
+    .message { margin-bottom: 25px; }
+    .section { background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 25px 0; }
+    .section h3 { color: #3D4771; margin-top: 0; font-size: 16px; }
+    .contact-info { margin-top: 15px; }
+    .contact-info p { margin: 5px 0; }
+    .contact-info a { color: #D35F00; text-decoration: none; }
+    .closing { margin-top: 30px; }
+    .footer { background: #f5f5f5; padding: 20px 30px; font-size: 12px; color: #666; border-top: 3px solid #D35F00; }
+    .footer p { margin: 5px 0; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>AKIM AG</h1>
+    </div>
+
+    <div class="content">
+      <p class="greeting">${t.greeting},</p>
+
+      <p class="message">${t.thanks}</p>
+
+      <p class="message">${t.saved}</p>
+
+      <div class="section">
+        <h3>${t.nextSteps}</h3>
+        <p>${t.nextStepsText}</p>
+      </div>
+
+      <div class="contact-info">
+        <h3>${t.contact}</h3>
+        <p><strong>${t.phone}:</strong> <a href="tel:+41526440646">+41 52 644 06 46</a></p>
+        <p><strong>${t.email}:</strong> <a href="mailto:help@akim.ch">help@akim.ch</a></p>
+        <p><strong>Web:</strong> <a href="https://www.akim.ch">www.akim.ch</a></p>
+      </div>
+
+      <div class="closing">
+        <p>${t.closing},<br><strong>${t.team}</strong></p>
+      </div>
+    </div>
+
+    <div class="footer">
+      <p><strong>AKIM AG</strong></p>
+      <p>Industriestrasse 11</p>
+      <p>CH-8604 Volketswil</p>
+      <p><a href="https://www.akim.ch">www.akim.ch</a></p>
+    </div>
+  </div>
+</body>
+</html>
+`;
+
+  return { subject: t.subject, text, html };
 }
 
 // Logging-Funktion (für Entwicklung oder als Backup)
