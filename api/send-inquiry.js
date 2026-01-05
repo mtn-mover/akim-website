@@ -42,7 +42,7 @@ module.exports = async function handler(req, res) {
           'Authorization': `Bearer ${resendApiKey}`
         },
         body: JSON.stringify({
-          from: 'AKIM Chatbot <chatbot@akim.ch>',
+          from: 'AKIM Chatbot <onboarding@resend.dev>',
           to: [process.env.NOTIFICATION_EMAIL || 'help@akim.ch'],
           reply_to: inquiry.email,
           subject: `Neue Chatbot-Anfrage: ${inquiry.application || 'Getriebe-Anfrage'} - ${inquiry.company || inquiry.name}`,
