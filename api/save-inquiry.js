@@ -101,14 +101,8 @@ module.exports = async function handler(req, res) {
 
     const inquiryId = result[0].id;
 
-    // E-Mail-Benachrichtigung an Techniker senden
-    await sendTechnicianNotification({
-      inquiryId,
-      customerName: leadData?.name,
-      customerEmail: leadData?.email,
-      customerCompany: leadData?.company,
-      summary
-    });
+    // E-Mail-Benachrichtigung wird über send-inquiry.js gesendet (schöneres Template)
+    // sendTechnicianNotification hier deaktiviert um Doppel-E-Mails zu vermeiden
 
     res.status(200).json({
       success: true,
