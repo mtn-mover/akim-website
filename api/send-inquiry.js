@@ -335,8 +335,8 @@ ${t.nextSteps}
 ${t.nextStepsText}
 
 ${t.contact}:
-${t.phone}: +41 52 644 06 46
-${t.email}: help@akim.ch
+${t.phone}: +41 55 451 85 00
+${t.email}: sales@akim.ch
 Web: www.akim.ch
 
 ${t.closing},
@@ -344,8 +344,8 @@ ${t.team}
 
 --
 AKIM AG
-Industriestrasse 11
-CH-8604 Volketswil
+Breitenstrasse 16
+CH-8852 Altendorf
 www.akim.ch
 `;
 
@@ -393,8 +393,8 @@ www.akim.ch
 
       <div class="contact-info">
         <h3>${t.contact}</h3>
-        <p><strong>${t.phone}:</strong> <a href="tel:+41526440646">+41 52 644 06 46</a></p>
-        <p><strong>${t.email}:</strong> <a href="mailto:help@akim.ch">help@akim.ch</a></p>
+        <p><strong>${t.phone}:</strong> <a href="tel:+41554518500">+41 55 451 85 00</a></p>
+        <p><strong>${t.email}:</strong> <a href="mailto:sales@akim.ch">sales@akim.ch</a></p>
         <p><strong>Web:</strong> <a href="https://www.akim.ch">www.akim.ch</a></p>
       </div>
 
@@ -405,8 +405,8 @@ www.akim.ch
 
     <div class="footer">
       <p><strong>AKIM AG</strong></p>
-      <p>Industriestrasse 11</p>
-      <p>CH-8604 Volketswil</p>
+      <p>Breitenstrasse 16</p>
+      <p>CH-8852 Altendorf</p>
       <p><a href="https://www.akim.ch">www.akim.ch</a></p>
     </div>
   </div>
