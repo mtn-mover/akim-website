@@ -583,6 +583,7 @@
                 Chatbot Anfragen
             </h1>
             <nav class="admin-nav">
+                <span id="user-display" style="padding: 8px 16px; font-size: 14px; opacity: 0.8;"></span>
                 <a href="rag-admin.html" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 8px 16px; border-radius: 6px; text-decoration: none; font-size: 14px;">RAG Produkte</a>
                 <button id="refresh-btn">↻ Aktualisieren</button>
                 <button id="logout-btn">Abmelden</button>
@@ -655,8 +656,14 @@
     <script>
         // State
         let authToken = localStorage.getItem('akim_admin_token') || '';
+        let currentUser = localStorage.getItem('akim_admin_user') || '';
         let inquiries = [];
         let currentFilter = 'all';
+
+        // Display current user
+        if (currentUser) {
+            document.getElementById('user-display').textContent = `Angemeldet als: ${currentUser}`;
+        }
 
         // Elements
         const adminView = document.getElementById('admin-view');
@@ -678,6 +685,7 @@
         // Logout
         document.getElementById('logout-btn').addEventListener('click', () => {
             localStorage.removeItem('akim_admin_token');
+            localStorage.removeItem('akim_admin_user');
             window.location.href = '/login.html';
         });
 
@@ -869,6 +877,16 @@
                         <textarea class="notes-textarea" id="notes-textarea">${inquiry.notes || ''}</textarea>
                         <button class="save-notes" onclick="saveNotes(${inquiry.id})">Notizen speichern</button>
                     </div>
+
+                    ${currentUser === 'admin' ? `
+                    <div class="detail-section" style="border-top: 2px solid var(--danger); padding-top: 20px; margin-top: 30px;">
+                        <h3 style="color: var(--danger);">Gefahrenzone</h3>
+                        <p style="font-size: 14px; color: var(--text-light); margin-bottom: 15px;">Diese Aktion kann nicht rückgängig gemacht werden.</p>
+                        <button onclick="deleteInquiry(${inquiry.id})" style="background: var(--danger); color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: 500;">
+                            Anfrage #${inquiry.id} löschen
+                        </button>
+                    </div>
+                    ` : ''}
                 `;
             } catch (error) {
                 console.error('Detail error:', error);
@@ -920,6 +938,34 @@
                 }
             } catch (error) {
                 console.error('Save error:', error);
+            }
+        }
+
+        async function deleteInquiry(id) {
+            if (!confirm(`Anfrage #${id} wirklich löschen?\n\nDiese Aktion kann nicht rückgängig gemacht werden.`)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/update-inquiry?id=${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(`Anfrage #${id} wurde gelöscht.`);
+                    closeModal();
+                    loadInquiries();
+                } else {
+                    alert(`Fehler: ${data.error || 'Löschen fehlgeschlagen'}`);
+                }
+            } catch (error) {
+                console.error('Delete error:', error);
+                alert('Fehler beim Löschen der Anfrage');
             }
         }
 

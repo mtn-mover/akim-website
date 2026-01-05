@@ -8,7 +8,7 @@ const crypto = require('crypto');
 function validateSessionToken(token, secret) {
   try {
     const decoded = JSON.parse(Buffer.from(token, 'base64').toString());
-    const { data, exp, sig } = decoded;
+    const { user, data, exp, sig } = decoded;
 
     if (Date.now() > exp) {
       return { valid: false, error: 'Token expired' };
@@ -23,7 +23,7 @@ function validateSessionToken(token, secret) {
       return { valid: false, error: 'Invalid signature' };
     }
 
-    return { valid: true };
+    return { valid: true, user };
   } catch (e) {
     return { valid: false, error: 'Invalid token format' };
   }
@@ -39,7 +39,7 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  if (req.method !== 'PUT' && req.method !== 'PATCH') {
+  if (req.method !== 'PUT' && req.method !== 'PATCH' && req.method !== 'DELETE') {
     res.status(405).json({ error: 'Method not allowed' });
     return;
   }
@@ -60,6 +60,50 @@ module.exports = async function handler(req, res) {
     return;
   }
 
+  const sql = neon(process.env.POSTGRES_URL);
+
+  // DELETE - Nur für Admin erlaubt
+  if (req.method === 'DELETE') {
+    // Prüfen ob Benutzer Admin ist
+    if (validation.user !== 'admin') {
+      res.status(403).json({ error: 'Forbidden - Only admin can delete inquiries' });
+      return;
+    }
+
+    const id = req.query.id || req.body?.id;
+
+    if (!id) {
+      res.status(400).json({ error: 'Inquiry ID required' });
+      return;
+    }
+
+    try {
+      const result = await sql`
+        DELETE FROM inquiries
+        WHERE id = ${parseInt(id)}
+        RETURNING id
+      `;
+
+      if (result.length === 0) {
+        res.status(404).json({ error: 'Inquiry not found' });
+        return;
+      }
+
+      res.status(200).json({
+        success: true,
+        message: `Inquiry #${id} deleted`,
+        id: result[0].id
+      });
+      return;
+
+    } catch (error) {
+      console.error('Delete inquiry error:', error);
+      res.status(500).json({ error: 'Failed to delete inquiry' });
+      return;
+    }
+  }
+
+  // PUT/PATCH - Update (alle Benutzer)
   try {
     const { id, status, notes, assigned_to } = req.body;
 
@@ -67,8 +111,6 @@ module.exports = async function handler(req, res) {
       res.status(400).json({ error: 'Inquiry ID required' });
       return;
     }
-
-    const sql = neon(process.env.POSTGRES_URL);
 
     // Dynamisches Update basierend auf übergebenen Feldern
     const updates = [];

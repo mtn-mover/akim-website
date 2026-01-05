@@ -1,23 +1,35 @@
 // AKIM Admin Authentication API
-// Einfaches Session-basiertes Login für Admin-Bereich
+// Multi-User Session-basiertes Login für Admin-Bereich
 //
 // Environment Variables:
-// - ADMIN_PASSWORD: Das Admin-Passwort (in Vercel Settings setzen)
+// - ADMIN_PASSWORD: Passwort für Benutzer "admin"
+// - SALES_PASSWORD: Passwort für Benutzer "sales"
+// - ENGINEERING_PASSWORD: Passwort für Benutzer "engineering"
 // - ADMIN_SESSION_SECRET: Geheimer Schlüssel für Session-Token
 
 const crypto = require('crypto');
 
+// Benutzer-Konfiguration (Passwörter aus Environment Variables)
+function getUsers() {
+  return {
+    admin: process.env.ADMIN_PASSWORD,
+    sales: process.env.SALES_PASSWORD,
+    engineering: process.env.ENGINEERING_PASSWORD
+  };
+}
+
 // Session-Token generieren (gültig für 24 Stunden)
-function generateSessionToken(secret) {
+function generateSessionToken(username, secret) {
   const timestamp = Date.now();
   const expiresAt = timestamp + (24 * 60 * 60 * 1000); // 24 Stunden
-  const data = `admin:${expiresAt}`;
+  const data = `${username}:${expiresAt}`;
   const signature = crypto
     .createHmac('sha256', secret)
     .update(data)
     .digest('hex');
 
   return Buffer.from(JSON.stringify({
+    user: username,
     data,
     exp: expiresAt,
     sig: signature
@@ -28,7 +40,7 @@ function generateSessionToken(secret) {
 function validateSessionToken(token, secret) {
   try {
     const decoded = JSON.parse(Buffer.from(token, 'base64').toString());
-    const { data, exp, sig } = decoded;
+    const { user, data, exp, sig } = decoded;
 
     // Abgelaufen?
     if (Date.now() > exp) {
@@ -45,7 +57,7 @@ function validateSessionToken(token, secret) {
       return { valid: false, error: 'Invalid signature' };
     }
 
-    return { valid: true };
+    return { valid: true, user };
   } catch (e) {
     return { valid: false, error: 'Invalid token format' };
   }
@@ -66,25 +78,35 @@ module.exports = async function handler(req, res) {
 
   // POST /api/auth?action=login - Login
   if (req.method === 'POST' && action === 'login') {
-    const { password } = req.body;
-    const expectedPassword = process.env.ADMIN_PASSWORD;
+    const { username, password } = req.body;
+    const users = getUsers();
+
+    // Prüfen ob Benutzername gültig ist
+    if (!username || !users.hasOwnProperty(username)) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      res.status(401).json({ error: 'Invalid username or password' });
+      return;
+    }
+
+    const expectedPassword = users[username];
 
     if (!expectedPassword) {
-      res.status(500).json({ error: 'ADMIN_PASSWORD not configured' });
+      res.status(500).json({ error: `Password for user "${username}" not configured` });
       return;
     }
 
     if (password !== expectedPassword) {
       // Kurze Verzögerung gegen Brute-Force
       await new Promise(resolve => setTimeout(resolve, 1000));
-      res.status(401).json({ error: 'Invalid password' });
+      res.status(401).json({ error: 'Invalid username or password' });
       return;
     }
 
-    const token = generateSessionToken(secret);
+    const token = generateSessionToken(username, secret);
     res.status(200).json({
       success: true,
       token,
+      user: username,
       expiresIn: '24h'
     });
     return;
