@@ -2,9 +2,9 @@
 // Verwendet Claude API für intelligente Gesprächsführung
 // Mit RAG-Integration für Produktwissen
 
-const { AKIM_SYSTEM_PROMPT, detectLanguage } = require('./system-prompt');
-const rag = require('./rag');
-const { setCorsHeaders, handlePreflight } = require('./cors');
+const { AKIM_SYSTEM_PROMPT, detectLanguage } = require('../lib/system-prompt');
+const rag = require('../lib/rag');
+const { setCorsHeaders, handlePreflight } = require('../lib/cors');
 
 // In-Memory Rate Limiting (wird bei Serverless-Funktionen pro Instance zurückgesetzt)
 // Für Produktion: Redis oder Vercel KV empfohlen
