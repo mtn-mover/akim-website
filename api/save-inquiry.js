@@ -118,10 +118,13 @@ module.exports = async function handler(req, res) {
 
 // Sendet E-Mail-Benachrichtigung an Sales
 async function sendTechnicianNotification({ inquiryId, customerName, customerEmail, customerCompany, summary }) {
-  // Sales E-Mail - Standard: help@akim.ch, kann via ENV überschrieben werden
-  const notificationEmail = process.env.NOTIFICATION_EMAIL || 'help@akim.ch';
+  // Sales E-Mail - Standard: help@akim.ch, kann via ENV mit Komma-getrennter Liste überschrieben werden
+  const notificationEmails = (process.env.NOTIFICATION_EMAIL || 'help@akim.ch')
+    .split(',')
+    .map(e => e.trim())
+    .filter(Boolean);
 
-  if (!notificationEmail) {
+  if (notificationEmails.length === 0) {
     console.log('NOTIFICATION_EMAIL not configured, skipping notification');
     return;
   }
@@ -143,7 +146,7 @@ async function sendTechnicianNotification({ inquiryId, customerName, customerEma
       },
       body: JSON.stringify({
         from: 'AKIM Chatbot <noreply@akim.ch>',
-        to: notificationEmail,
+        to: notificationEmails,
         subject: `Neue Anfrage von ${customerName || 'Unbekannt'} - AKIM Chatbot`,
         html: `
           <h2>Neue Chatbot-Anfrage eingegangen</h2>
