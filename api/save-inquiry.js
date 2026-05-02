@@ -10,7 +10,7 @@
 // ALTER TABLE inquiries ADD COLUMN IF NOT EXISTS form_timestamp TIMESTAMP;
 
 const { neon } = require('@neondatabase/serverless');
-const { setCorsHeaders, handlePreflight } = require('./cors');
+const { setCorsHeaders, handlePreflight } = require('../lib/cors');
 
 module.exports = async function handler(req, res) {
   // CORS Headers (erlaubt chat.akim.ch und akim.ch)

@@ -11,7 +11,7 @@
 // DELETE ?id=xxx              - Produkt löschen
 
 const { neon } = require('@neondatabase/serverless');
-const rag = require('./rag');
+const rag = require('../lib/rag');
 const crypto = require('crypto');
 
 // Fallback: Initiale Produktdaten aus JSON (für Import)
@@ -47,7 +47,7 @@ function validateSessionToken(token, secret) {
   }
 }
 
-const { setCorsHeaders, handlePreflight } = require('./cors');
+const { setCorsHeaders, handlePreflight } = require('../lib/cors');
 
 module.exports = async function handler(req, res) {
   // CORS Headers (erlaubt chat.akim.ch und akim.ch)

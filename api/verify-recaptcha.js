@@ -1,7 +1,7 @@
 // AKIM reCAPTCHA Verification API - Vercel Serverless Function
 // Verifiziert reCAPTCHA Token beim Chat-Start
 
-const { setCorsHeaders, handlePreflight } = require('./cors');
+const { setCorsHeaders, handlePreflight } = require('../lib/cors');
 
 module.exports = async function handler(req, res) {
   // CORS Headers (erlaubt chat.akim.ch und akim.ch)

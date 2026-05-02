@@ -1,7 +1,7 @@
 // AKIM Inquiry Email API - Vercel Serverless Function
 // Sendet die abgeschlossene Anfrage per E-Mail an das Verkaufsteam
 
-const { setCorsHeaders, handlePreflight } = require('./cors');
+const { setCorsHeaders, handlePreflight } = require('../lib/cors');
 
 module.exports = async function handler(req, res) {
   // CORS Headers (erlaubt chat.akim.ch und akim.ch)
